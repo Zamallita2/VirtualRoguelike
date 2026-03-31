@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7411237428711720852
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4506154815870848861, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: connections.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.85185
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7949962059948377387, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8908301201263461182, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: m_Name
+      value: BossRoom Variant
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 147096640938832833, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+    - {fileID: 7002393313688450344, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+    - {fileID: 3145239614955228265, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
