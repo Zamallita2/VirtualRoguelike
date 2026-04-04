@@ -157,6 +157,7 @@ MonoBehaviour:
   - {fileID: 6789996490541634104, guid: 74489ba6a5a2d101ca84981999dde979, type: 3}
   wallPrefab: {fileID: 6875891272827011040, guid: 00af6a25723c58f74b7d0e56023c7bc2, type: 3}
   maxRooms: 15
+  waveNum: 0
   generatedRoot: {fileID: 1596694740}
 --- !u!4 &341042169
 Transform:
