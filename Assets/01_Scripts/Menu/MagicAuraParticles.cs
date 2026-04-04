@@ -1,6 +1,5 @@
-﻿// Script: MagicAuraParticles.cs
-
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 public class MagicAuraParticles : MonoBehaviour
 {
@@ -11,77 +10,61 @@ public class MagicAuraParticles : MonoBehaviour
 
     void CreateMagicAura()
     {
-        GameObject particleObj = new GameObject("ParticleSystem_MagicAura");
-        particleObj.transform.SetParent(this.transform);
-        particleObj.transform.localPosition = new Vector3(0, 0.5f, 0);
+        ParticleSystem ps = gameObject.AddComponent<ParticleSystem>();
 
-        ParticleSystem ps = particleObj.AddComponent<ParticleSystem>();
+        // ✅ IGUAL QUE EL ORIGINAL
+        ps.transform.localScale = Vector3.one * 0.02f;
+
         var main = ps.main;
-        main.startLifetime = 3f;
-        main.startSpeed = 0.5f;
-        main.startSize = 0.2f;
-        main.startColor = new Color(0.5f, 0f, 1f, 0.8f); // Púrpura
-        main.maxParticles = 200;
+        main.startLifetime = 2f;
+        main.startSpeed = 0.02f;
+        main.startSize = 0.02f;
+        main.startColor = new Color(0.25f, 0f, 0.4f, 0.5f); // púrpura muy oscuro
+        main.maxParticles = 30;
         main.loop = true;
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.scalingMode = ParticleSystemScalingMode.Local; // ✅ igual al original
 
-        // Emisión
+        // ✅ emission en variable primero
         var emission = ps.emission;
-        emission.rateOverTime = 30;
+        emission.rateOverTime = 6;
 
-        // Forma - Esfera alrededor del castillo
         var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Sphere;
-        shape.radius = 2f;
-        shape.radiusThickness = 0.5f;
+        shape.radius = 0.2f;
 
-        // Color over lifetime - degradado mágico
+        // 🎨 COLORES DARK: púrpura sombrío → azul noche → negro
         var colorOverLifetime = ps.colorOverLifetime;
         colorOverLifetime.enabled = true;
-
         Gradient gradient = new Gradient();
         gradient.SetKeys(
             new GradientColorKey[] {
-                new GradientColorKey(new Color(0.5f, 0f, 1f), 0.0f),    // Púrpura
-                new GradientColorKey(new Color(0f, 0.5f, 1f), 0.5f),     // Azul
-                new GradientColorKey(new Color(1f, 0f, 0.5f), 1.0f)      // Rosa
+                new GradientColorKey(new Color(0.3f,  0.0f,  0.45f), 0f),   // púrpura oscuro
+                new GradientColorKey(new Color(0.05f, 0.08f, 0.3f),  0.5f), // azul noche
+                new GradientColorKey(new Color(0.02f, 0.02f, 0.07f), 1f)    // casi negro
             },
             new GradientAlphaKey[] {
-                new GradientAlphaKey(0.8f, 0.0f),
-                new GradientAlphaKey(0.5f, 0.5f),
-                new GradientAlphaKey(0.0f, 1.0f)
+                new GradientAlphaKey(0.55f, 0f),
+                new GradientAlphaKey(0.3f,  0.5f),
+                new GradientAlphaKey(0f,    1f)
             }
         );
+        colorOverLifetime.color = gradient;
 
-        colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
-
-        // Tamaño over lifetime
         var sizeOverLifetime = ps.sizeOverLifetime;
         sizeOverLifetime.enabled = true;
-        AnimationCurve sizeCurve = new AnimationCurve();
-        sizeCurve.AddKey(0.0f, 0.3f);
-        sizeCurve.AddKey(0.5f, 1.0f);
-        sizeCurve.AddKey(1.0f, 0.0f);
-        sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+        sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(
+            0.6f, AnimationCurve.EaseInOut(0, 0, 1, 0.6f));
 
-        // Velocity over lifetime - movimiento orbital
-        var velocityOverLifetime = ps.velocityOverLifetime;
-        velocityOverLifetime.enabled = true;
-        velocityOverLifetime.space = ParticleSystemSimulationSpace.World;
-        velocityOverLifetime.orbitalY = 0.5f;
-        velocityOverLifetime.orbitalZ = 0.3f;
+        var noise = ps.noise;
+        noise.enabled = true;
+        noise.strength = 0.01f;
+        noise.frequency = 0.3f;
 
-        // Renderer
-        var renderer = ps.GetComponent<ParticleSystemRenderer>();
-        renderer.renderMode = ParticleSystemRenderMode.Billboard;
-        renderer.material = CreateGlowMaterial();
-    }
+        var rend = ps.GetComponent<ParticleSystemRenderer>();
+        rend.renderMode = ParticleSystemRenderMode.Billboard;
+        rend.material = FireParticle.BuildTransparentMaterial(new Color(0.22f, 0f, 0.38f, 1f));
 
-    Material CreateGlowMaterial()
-    {
-        Material mat = new Material(Shader.Find("Particles/Standard Unlit"));
-        mat.SetColor("_Color", Color.white);
-        mat.EnableKeyword("_EMISSION");
-        mat.SetColor("_EmissionColor", new Color(1f, 0.5f, 1f) * 2f);
-        return mat;
+        ps.Play();
     }
 }

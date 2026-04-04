@@ -1,162 +1,151 @@
-// Script: MenuUISetup.cs
-// Pégalo en una carpeta Scripts que crees
-
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class MenuUISetup : MonoBehaviour
 {
-    [Header("UI References")]
-    public Canvas mainCanvas;
-    public Image backgroundPanel;
-    public TextMeshProUGUI titleText;
-    public Button playButton;
-    public Button multiplayerButton;
-    public Button optionsButton;
+    [SerializeField] private float menuScale = 0.0008f;   // mÃ¡s pequeÃ±o aÃºn
+    [SerializeField] private float menuDistance = 0.5f;
+    [SerializeField] private float menuHeight = 0f;
 
-    [Header("Colors Medieval Theme")]
-    public Color goldColor = new Color(1f, 0.84f, 0f);
-    public Color darkBrown = new Color(0.2f, 0.1f, 0.05f, 0.8f);
-    public Color stoneGray = new Color(0.3f, 0.3f, 0.3f, 0.9f);
+    [HideInInspector] public Canvas mainCanvas;
+    [HideInInspector] public CanvasGroup menuCanvasGroup;
+    [HideInInspector] public Button playButton;
+    [HideInInspector] public Button multiplayerButton;
+    [HideInInspector] public Button optionsButton;
+    [HideInInspector] public TextMeshProUGUI titleText;
 
-    void Start()
+    void Awake()
     {
-        SetupCanvas();
-        SetupBackground();
-        SetupTitle();
-        SetupButtons();
+        CreateMenu();
     }
 
-    void SetupCanvas()
+    void CreateMenu()
     {
-        if (mainCanvas == null)
+        GameObject canvasGO = new GameObject("MenuCanvas_World");
+        canvasGO.transform.SetParent(transform, false);
+        mainCanvas = canvasGO.AddComponent<Canvas>();
+        mainCanvas.renderMode = RenderMode.WorldSpace;
+        CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 10;
+        canvasGO.AddComponent<GraphicRaycaster>();
+
+        RectTransform canvasRect = canvasGO.GetComponent<RectTransform>();
+        canvasRect.sizeDelta = new Vector2(800, 600);
+        canvasRect.localScale = Vector3.one * menuScale;
+
+        Camera cam = Camera.main;
+        if (cam != null)
         {
-            GameObject canvasObj = new GameObject("Canvas_MenuUI");
-            mainCanvas = canvasObj.AddComponent<Canvas>();
-            mainCanvas.renderMode = RenderMode.WorldSpace;
-
-            // Posicionar el canvas frente al castillo
-            canvasObj.transform.SetParent(this.transform);
-            canvasObj.transform.localPosition = new Vector3(0, 1.5f, 1f);
-            canvasObj.transform.localRotation = Quaternion.identity;
-
-            RectTransform canvasRect = mainCanvas.GetComponent<RectTransform>();
-            canvasRect.sizeDelta = new Vector2(800, 600);
-            canvasRect.localScale = new Vector3(0.01f, 0.01f, 0.01f);
-
-            CanvasScaler scaler = canvasObj.AddComponent<CanvasScaler>();
-            scaler.dynamicPixelsPerUnit = 10;
-
-            canvasObj.AddComponent<GraphicRaycaster>();
+            canvasRect.position = cam.transform.position + cam.transform.forward * menuDistance + Vector3.up * menuHeight;
+            canvasRect.rotation = Quaternion.LookRotation(canvasRect.position - cam.transform.position);
         }
-    }
+        else
+        {
+            canvasRect.localPosition = new Vector3(0, menuHeight, menuDistance);
+        }
 
-    void SetupBackground()
-    {
-        GameObject bgObj = new GameObject("Panel_Background");
-        bgObj.transform.SetParent(mainCanvas.transform);
+        menuCanvasGroup = canvasGO.AddComponent<CanvasGroup>();
+        menuCanvasGroup.alpha = 0f;
+        menuCanvasGroup.interactable = false;
+        menuCanvasGroup.blocksRaycasts = false;
 
-        backgroundPanel = bgObj.AddComponent<Image>();
-        backgroundPanel.color = new Color(0, 0, 0, 0.7f);
+        // Fondo oscuro
+        GameObject panel = new GameObject("Background");
+        panel.transform.SetParent(canvasGO.transform, false);
+        Image panelImg = panel.AddComponent<Image>();
+        panelImg.color = new Color(0.1f, 0.08f, 0.06f, 0.95f);
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        panelRect.anchorMin = Vector2.zero;
+        panelRect.anchorMax = Vector2.one;
+        panelRect.sizeDelta = Vector2.zero;
 
-        RectTransform bgRect = bgObj.GetComponent<RectTransform>();
-        bgRect.anchorMin = new Vector2(0, 0);
-        bgRect.anchorMax = new Vector2(1, 1);
-        bgRect.offsetMin = Vector2.zero;
-        bgRect.offsetMax = Vector2.zero;
+        // Borde dorado
+        GameObject border = new GameObject("GoldenBorder");
+        border.transform.SetParent(canvasGO.transform, false);
+        Image borderImg = border.AddComponent<Image>();
+        borderImg.color = new Color(1f, 0.84f, 0f, 1f);
+        RectTransform borderRect = border.GetComponent<RectTransform>();
+        borderRect.anchorMin = Vector2.zero;
+        borderRect.anchorMax = Vector2.one;
+        borderRect.sizeDelta = new Vector2(-20, -20);
 
-        // Agregar borde dorado
-        Outline outline = bgObj.AddComponent<Outline>();
-        outline.effectColor = goldColor;
-        outline.effectDistance = new Vector2(3, -3);
-    }
+        // Panel interior
+        GameObject innerPanel = new GameObject("InnerPanel");
+        innerPanel.transform.SetParent(canvasGO.transform, false);
+        Image innerImg = innerPanel.AddComponent<Image>();
+        innerImg.color = new Color(0.15f, 0.12f, 0.08f, 1f);
+        RectTransform innerRect = innerPanel.GetComponent<RectTransform>();
+        innerRect.anchorMin = Vector2.zero;
+        innerRect.anchorMax = Vector2.one;
+        innerRect.sizeDelta = new Vector2(-26, -26);
 
-    void SetupTitle()
-    {
-        GameObject titleObj = new GameObject("Title_CursedAscent");
-        titleObj.transform.SetParent(mainCanvas.transform);
-
-        titleText = titleObj.AddComponent<TextMeshProUGUI>();
+        // TÃ­tulo
+        GameObject titleGO = new GameObject("Title");
+        titleGO.transform.SetParent(canvasGO.transform, false);
+        titleText = titleGO.AddComponent<TextMeshProUGUI>();
         titleText.text = "CURSED ASCENT";
-        titleText.fontSize = 72;
+        titleText.fontSize = 48;
         titleText.alignment = TextAlignmentOptions.Center;
-        titleText.color = goldColor;
+        titleText.color = new Color(1f, 0.84f, 0f);
         titleText.fontStyle = FontStyles.Bold;
+        RectTransform titleRect = titleGO.GetComponent<RectTransform>();
+        titleRect.anchorMin = new Vector2(0, 0.75f);
+        titleRect.anchorMax = new Vector2(1, 0.95f);
+        titleRect.sizeDelta = Vector2.zero;
+        titleGO.AddComponent<TitleGlowEffect>();
 
-        // Efecto de sombra
-        titleText.outlineColor = Color.black;
-        titleText.outlineWidth = 0.3f;
-
-        RectTransform titleRect = titleObj.GetComponent<RectTransform>();
-        titleRect.anchorMin = new Vector2(0.5f, 0.8f);
-        titleRect.anchorMax = new Vector2(0.5f, 0.8f);
-        titleRect.pivot = new Vector2(0.5f, 0.5f);
-        titleRect.sizeDelta = new Vector2(700, 100);
-        titleRect.anchoredPosition = Vector2.zero;
-
-        // Animación de parpadeo del título
-        titleObj.AddComponent<TitleGlowEffect>();
+        // Botones
+        playButton = CreateButton(canvasGO.transform, "PlayButton", "JUGAR", new Vector2(0.5f, 0.55f), new Vector2(300, 70));
+        multiplayerButton = CreateButton(canvasGO.transform, "MultiplayerButton", "MULTIJUGADOR", new Vector2(0.5f, 0.38f), new Vector2(300, 70));
+        optionsButton = CreateButton(canvasGO.transform, "OptionsButton", "OPCIONES", new Vector2(0.5f, 0.21f), new Vector2(300, 70));
     }
 
-    void SetupButtons()
+    Button CreateButton(Transform parent, string name, string text, Vector2 anchorPosition, Vector2 size)
     {
-        // Botón JUGAR
-        playButton = CreateMedievalButton("Button_Play", "JUGAR", new Vector2(0.5f, 0.5f), 0);
+        GameObject btnGO = new GameObject(name);
+        btnGO.transform.SetParent(parent, false);
+        RectTransform btnRect = btnGO.AddComponent<RectTransform>();
+        btnRect.anchorMin = anchorPosition;
+        btnRect.anchorMax = anchorPosition;
+        btnRect.pivot = new Vector2(0.5f, 0.5f);
+        btnRect.sizeDelta = size;
+        btnRect.anchoredPosition = Vector2.zero;
 
-        // Botón MULTIJUGADOR
-        multiplayerButton = CreateMedievalButton("Button_Multiplayer", "MULTIJUGADOR", new Vector2(0.5f, 0.35f), 1);
-
-        // Botón OPCIONES
-        optionsButton = CreateMedievalButton("Button_Options", "OPCIONES", new Vector2(0.5f, 0.2f), 2);
-    }
-
-    Button CreateMedievalButton(string name, string buttonText, Vector2 anchorPos, int index)
-    {
-        GameObject buttonObj = new GameObject(name);
-        buttonObj.transform.SetParent(mainCanvas.transform);
-
-        Button button = buttonObj.AddComponent<Button>();
-        Image buttonImage = buttonObj.AddComponent<Image>();
-
-        // Color del botón
-        buttonImage.color = stoneGray;
-
-        // Configurar transición
+        Image btnImage = btnGO.AddComponent<Image>();
+        btnImage.color = new Color(0.3f, 0.2f, 0.1f);
+        Button button = btnGO.AddComponent<Button>();
         ColorBlock colors = button.colors;
-        colors.normalColor = stoneGray;
-        colors.highlightedColor = new Color(0.5f, 0.4f, 0.3f);
-        colors.pressedColor = goldColor;
-        colors.selectedColor = new Color(0.6f, 0.5f, 0.4f);
+        colors.normalColor = new Color(0.3f, 0.2f, 0.1f);
+        colors.highlightedColor = new Color(0.5f, 0.35f, 0.2f);
+        colors.pressedColor = new Color(0.2f, 0.15f, 0.05f);
+        colors.selectedColor = new Color(0.4f, 0.28f, 0.15f);
         button.colors = colors;
 
-        RectTransform buttonRect = buttonObj.GetComponent<RectTransform>();
-        buttonRect.anchorMin = anchorPos;
-        buttonRect.anchorMax = anchorPos;
-        buttonRect.pivot = new Vector2(0.5f, 0.5f);
-        buttonRect.sizeDelta = new Vector2(400, 80);
-        buttonRect.anchoredPosition = Vector2.zero;
-
-        // Texto del botón
-        GameObject textObj = new GameObject("Text");
-        textObj.transform.SetParent(buttonObj.transform);
-
-        TextMeshProUGUI text = textObj.AddComponent<TextMeshProUGUI>();
-        text.text = buttonText;
-        text.fontSize = 36;
-        text.alignment = TextAlignmentOptions.Center;
-        text.color = goldColor;
-        text.fontStyle = FontStyles.Bold;
-
-        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        GameObject textGO = new GameObject("Text");
+        textGO.transform.SetParent(btnGO.transform, false);
+        TextMeshProUGUI txt = textGO.AddComponent<TextMeshProUGUI>();
+        txt.text = text;
+        txt.fontSize = 32;
+        txt.alignment = TextAlignmentOptions.Center;
+        txt.color = new Color(1f, 0.84f, 0f);
+        txt.fontStyle = FontStyles.Bold;
+        RectTransform textRect = textGO.GetComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
+        textRect.sizeDelta = Vector2.zero;
 
-        // Agregar efecto hover y script de sonido
-        buttonObj.AddComponent<ButtonHoverEffect>();
-
+        btnGO.AddComponent<ButtonHoverEffect>();
         return button;
+    }
+
+    public void RepositionInFrontOfCamera()
+    {
+        if (mainCanvas == null) return;
+        Camera cam = Camera.main;
+        if (cam == null) return;
+        RectTransform canvasRect = mainCanvas.GetComponent<RectTransform>();
+        canvasRect.position = cam.transform.position + cam.transform.forward * menuDistance + Vector3.up * menuHeight;
+        canvasRect.rotation = Quaternion.LookRotation(canvasRect.position - cam.transform.position);
     }
 }
