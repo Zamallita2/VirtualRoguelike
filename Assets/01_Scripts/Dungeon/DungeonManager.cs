@@ -7,6 +7,7 @@ public class DungeonManager : MonoBehaviour
     public Room bossRoomPrefab;
     public Room shopRoomPrefab;
     public List<Room> roomPrefabs;
+    public GameObject wallPrefab;
 
     public int maxRooms = 10;
 
@@ -79,6 +80,7 @@ public class DungeonManager : MonoBehaviour
         }
         AttachSpecialRoom(bossRoomPrefab, true);
         AttachSpecialRoom(shopRoomPrefab, false);
+        CloseOpenConnections();
     }
     void AttachSpecialRoom(Room specialPrefab, bool isBoss)
     {
@@ -155,5 +157,23 @@ public class DungeonManager : MonoBehaviour
         }
 
         return false;
+    }
+    void CloseOpenConnections()
+    {
+        foreach (var c in openConnections)
+        {
+            if (c.isOccupied) continue;
+
+            Vector3 pos = c.transform.position;
+            pos.y = -0.4f;
+
+            Quaternion rot = c.transform.rotation * Quaternion.Euler(0, -90f, 0);
+
+            Instantiate(wallPrefab, pos, rot);
+
+            c.isOccupied = true;
+        }
+
+        Debug.Log("Todas las conexiones abiertas fueron cerradas uwu 🧱✨");
     }
 }
