@@ -6,17 +6,18 @@ public class PlayerMovement : MonoBehaviour
 
     private Animator anim;
     private CapsuleCollider col;
+    private Rigidbody rb;
     private bool isDead = false;
 
     void Start()
     {
         anim = GetComponent<Animator>();
         col = GetComponent<CapsuleCollider>();
+        rb = GetComponent<Rigidbody>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // Si está muerto, no hace nada más
         if (isDead) return;
 
         float h = Input.GetAxis("Horizontal");
@@ -24,19 +25,24 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = new Vector3(h, 0, v).normalized;
 
-        // Movimiento
-        transform.Translate(move * speed * Time.deltaTime, Space.World);
+        // Movimiento usando Rigidbody (correcto)
+        Vector3 velocity = new Vector3(move.x * speed, rb.linearVelocity.y, move.z * speed);
+        rb.linearVelocity = velocity;
 
-        // Rotación
+        // Rotación hacia donde se mueve
         if (move != Vector3.zero)
         {
             Quaternion rot = Quaternion.LookRotation(move);
             transform.rotation = Quaternion.Slerp(transform.rotation, rot, 10f * Time.deltaTime);
         }
 
-        // Animación movimiento
-        float velocidad = move.magnitude;
-        anim.SetFloat("Speed", velocidad);
+        // Animación de movimiento
+        anim.SetFloat("Speed", move.magnitude);
+    }
+
+    void Update()
+    {
+        if (isDead) return;
 
         // Ataque
         if (Input.GetKeyDown(KeyCode.Space))
@@ -55,16 +61,20 @@ public class PlayerMovement : MonoBehaviour
     {
         isDead = true;
 
-        // Activar animación de muerte
+        // Animación de muerte
         anim.SetTrigger("Dead");
-
-        // Detener movimiento
         anim.SetFloat("Speed", 0);
 
-        // Desactivar collider para que no flote
+        // Detener movimiento
+        rb.linearVelocity = Vector3.zero;
+
+        // Desactivar collider
         if (col != null)
         {
             col.enabled = false;
         }
+
+        // Opcional: congelar Rigidbody
+        rb.isKinematic = true;
     }
 }
