@@ -76,7 +76,7 @@ PrefabInstance:
       addedObject: {fileID: 7109964806724334343}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ab74397fcc989d24abf2dc54172da3bc, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3479659069349942324}
+      addedObject: {fileID: 7868398401488721766}
   m_SourcePrefab: {fileID: 100100000, guid: ab74397fcc989d24abf2dc54172da3bc, type: 3}
 --- !u!1 &889951298915535013 stripped
 GameObject:
@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 1
+  rotationSpeed: 10
 --- !u!54 &7109964806724334343
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -121,10 +122,10 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
---- !u!135 &3479659069349942324
-SphereCollider:
+--- !u!136 &7868398401488721766
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -141,6 +142,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5077343
-  m_Center: {x: 0, y: 0.4740913, z: 0}
+  serializedVersion: 2
+  m_Radius: 0.15200853
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}

@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
+    public float rotationSpeed = 10f;
 
     private Animator anim;
     private CapsuleCollider col;
@@ -33,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
         if (move != Vector3.zero)
         {
             Quaternion rot = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rot, 10f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rot, rotationSpeed * Time.deltaTime);
         }
 
         // Animación de movimiento
