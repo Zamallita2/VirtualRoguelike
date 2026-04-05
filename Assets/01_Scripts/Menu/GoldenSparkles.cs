@@ -1,99 +1,64 @@
-﻿// Script: GoldenSparkles.cs
-
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GoldenSparkles : MonoBehaviour
 {
     void Start()
     {
-        CreateSparkles();
-    }
+        ParticleSystem ps = gameObject.AddComponent<ParticleSystem>();
 
-    void CreateSparkles()
-    {
-        GameObject sparkleObj = new GameObject("ParticleSystem_Sparkles");
-        sparkleObj.transform.SetParent(this.transform);
-        sparkleObj.transform.localPosition = new Vector3(0, 2f, 0);
-
-        ParticleSystem ps = sparkleObj.AddComponent<ParticleSystem>();
+        // ✅ IGUAL QUE EL ORIGINAL
+        ps.transform.localScale = Vector3.one * 0.002f;
 
         var main = ps.main;
-        main.startLifetime = new ParticleSystem.MinMaxCurve(2f, 4f);
-        main.startSpeed = new ParticleSystem.MinMaxCurve(0.2f, 0.8f);
-        main.startSize = new ParticleSystem.MinMaxCurve(0.05f, 0.15f);
-        main.startRotation = new ParticleSystem.MinMaxCurve(0, 360 * Mathf.Deg2Rad);
-        main.maxParticles = 100;
-        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.startLifetime = new ParticleSystem.MinMaxCurve(1.2f, 2f);
+        main.startSpeed = new ParticleSystem.MinMaxCurve(0.005f, 0.02f);
+        main.startSize = new ParticleSystem.MinMaxCurve(0.0003f, 0.001f);
+        main.maxParticles = 15;
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.scalingMode = ParticleSystemScalingMode.Local; // ✅ igual al original
 
-        // Emission
+        // ✅ emission en variable primero
         var emission = ps.emission;
-        emission.rateOverTime = 15;
+        emission.rateOverTime = 3;
 
-        // Bursts periódicos
-        ParticleSystem.Burst burst = new ParticleSystem.Burst(0f, 20);
-        emission.SetBurst(0, burst);
-
-        // Shape - Box grande sobre el castillo
         var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Box;
-        shape.scale = new Vector3(3f, 0.5f, 3f);
+        shape.scale = new Vector3(0.02f, 0.01f, 0.02f);
 
-        // Color - Dorado brillante
+        // 🎨 COLORES DARK: cobre oxidado en lugar de oro brillante
         var colorOverLifetime = ps.colorOverLifetime;
         colorOverLifetime.enabled = true;
-
-        Gradient sparkleGradient = new Gradient();
-        sparkleGradient.SetKeys(
+        Gradient gradient = new Gradient();
+        gradient.SetKeys(
             new GradientColorKey[] {
-                new GradientColorKey(new Color(1f, 1f, 0.8f), 0.0f),
-                new GradientColorKey(new Color(1f, 0.84f, 0f), 0.5f),
-                new GradientColorKey(new Color(1f, 0.6f, 0f), 1.0f)
+                new GradientColorKey(new Color(0.75f, 0.38f, 0.05f), 0f),   // cobre
+                new GradientColorKey(new Color(0.48f, 0.18f, 0.0f),  0.5f), // bronce oscuro
+                new GradientColorKey(new Color(0.22f, 0.07f, 0.0f),  1f)    // marrón quemado
             },
             new GradientAlphaKey[] {
-                new GradientAlphaKey(0f, 0.0f),
-                new GradientAlphaKey(1f, 0.2f),
-                new GradientAlphaKey(1f, 0.8f),
-                new GradientAlphaKey(0f, 1.0f)
+                new GradientAlphaKey(0f,    0f),
+                new GradientAlphaKey(0.6f,  0.2f),
+                new GradientAlphaKey(0.5f,  0.8f),
+                new GradientAlphaKey(0f,    1f)
             }
         );
+        colorOverLifetime.color = gradient;
 
-        colorOverLifetime.color = new ParticleSystem.MinMaxGradient(sparkleGradient);
-
-        // Velocity over lifetime - caída suave
-        var velocityOverLifetime = ps.velocityOverLifetime;
-        velocityOverLifetime.enabled = true;
-        velocityOverLifetime.y = new ParticleSystem.MinMaxCurve(-0.5f);
-        velocityOverLifetime.x = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f);
-        velocityOverLifetime.z = new ParticleSystem.MinMaxCurve(-0.2f, 0.2f);
-
-        // Size over lifetime - parpadeo
         var sizeOverLifetime = ps.sizeOverLifetime;
         sizeOverLifetime.enabled = true;
-        AnimationCurve sizeCurve = new AnimationCurve();
-        sizeCurve.AddKey(0.0f, 0f);
-        sizeCurve.AddKey(0.1f, 1f);
-        sizeCurve.AddKey(0.5f, 0.8f);
-        sizeCurve.AddKey(0.9f, 1f);
-        sizeCurve.AddKey(1.0f, 0f);
-        sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, sizeCurve);
+        sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(
+            0.4f, AnimationCurve.EaseInOut(0, 0, 1, 0.4f));
 
-        // Rotation over lifetime
-        var rotationOverLifetime = ps.rotationOverLifetime;
-        rotationOverLifetime.enabled = true;
-        rotationOverLifetime.z = new ParticleSystem.MinMaxCurve(-180 * Mathf.Deg2Rad, 180 * Mathf.Deg2Rad);
+        var noise = ps.noise;
+        noise.enabled = true;
+        noise.strength = 0.002f;
+        noise.frequency = 0.2f;
 
-        // Renderer
-        var renderer = ps.GetComponent<ParticleSystemRenderer>();
-        renderer.renderMode = ParticleSystemRenderMode.Billboard;
-        renderer.material = CreateSparkleMaterial();
-    }
+        var rend = ps.GetComponent<ParticleSystemRenderer>();
+        rend.renderMode = ParticleSystemRenderMode.Billboard;
+        rend.material = FireParticle.BuildTransparentMaterial(new Color(0.65f, 0.28f, 0.04f, 1f));
 
-    Material CreateSparkleMaterial()
-    {
-        Material mat = new Material(Shader.Find("Particles/Standard Unlit"));
-        mat.SetColor("_Color", new Color(1f, 0.84f, 0f));
-        mat.EnableKeyword("_EMISSION");
-        mat.SetColor("_EmissionColor", new Color(1f, 0.84f, 0f) * 5f);
-        return mat;
+        ps.Play();
     }
 }

@@ -1,245 +1,210 @@
-﻿// Script: MenuManager.cs
-// ¡ESTE ES EL SCRIPT PRINCIPAL QUE CONTROLA TODO!
-
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
-    [Header("References")]
-    public GameObject menuContainer;
-    public GameObject castleModel;
-    public CanvasGroup menuCanvasGroup;
-    public Animator cameraAnimator;
-    public DoorGlowParticles doorGlow;
-
-    [Header("UI Elements")]
+    [Header("UI")]
     public Button playButton;
     public Button multiplayerButton;
     public Button optionsButton;
-    public TextMeshProUGUI titleText;
+    public CanvasGroup menuCanvasGroup;
 
-    [Header("Audio")]
-    public AudioManager audioManager;
+    [Header("Referencias")]
+    public Transform castleTransform;
+    public Camera arCamera;
 
-    [Header("Settings")]
-    public float fadeInDuration = 2f;
-    public float doorOpenDelay = 1f;
+    [Header("Zoom a la puerta")]
+    public Transform doorTransform;
+    public float zoomDistance = 0.15f;
+    public float zoomDuration = 2.5f;
 
-    private bool isTransitioning = false;
+    [Header("Door Glow")]
+    public DoorGlowParticles doorGlow;
+
+    [Header("Audio (Opcional - se busca automáticamente)")]
+    public AudioManager audioManager; // ✅ AHORA ES PÚBLICO para asignarlo en el Inspector
 
     void Start()
     {
-        // Asegurar que el menú esté oculto al inicio
-        if (menuCanvasGroup != null)
+        // ✅ Buscar AudioManager si no está asignado
+        if (audioManager == null)
+            audioManager = FindFirstObjectByType<AudioManager>();
+
+        if (audioManager == null)
+            Debug.LogError("[MenuManager] ❌ AudioManager no encontrado en Start()");
+        else
+            Debug.Log("[MenuManager] ✅ AudioManager encontrado en Start()");
+
+        if (arCamera == null) arCamera = Camera.main;
+
+        // Ajustar escala del castillo si es demasiado pequeño
+        if (castleTransform != null)
         {
-            menuCanvasGroup.alpha = 0f;
+            if (castleTransform.localScale.magnitude < 1f)
+                castleTransform.localScale = Vector3.one * 5f;
+            Debug.Log("[MenuManager] Escala del castillo: " + castleTransform.localScale);
         }
+    }
 
-        menuContainer.SetActive(false);
-
-        // Configurar botones
+    public void RegisterButtons()
+    {
         if (playButton != null)
         {
-            playButton.onClick.AddListener(OnPlayButtonClicked);
+            playButton.onClick.RemoveAllListeners();
+            playButton.onClick.AddListener(OnPlayClicked);
         }
-
         if (multiplayerButton != null)
         {
-            multiplayerButton.onClick.AddListener(OnMultiplayerButtonClicked);
+            multiplayerButton.onClick.RemoveAllListeners();
+            multiplayerButton.onClick.AddListener(OnMultiClicked);
         }
-
         if (optionsButton != null)
         {
-            optionsButton.onClick.AddListener(OnOptionsButtonClicked);
+            optionsButton.onClick.RemoveAllListeners();
+            optionsButton.onClick.AddListener(OnOptionsClicked);
         }
     }
 
-    // Llamar esto cuando Vuforia detecte una superficie
     public void OnSurfaceDetected()
     {
-        menuContainer.SetActive(true);
-        StartCoroutine(FadeInMenu());
+        Debug.Log("[MenuManager] Superficie detectada - Mostrando menú");
+        StartCoroutine(ShowMenuSequence());
+    }
+
+    IEnumerator ShowMenuSequence()
+    {
+        // ✅ BUSCAR AudioManager JUSTO ANTES DE USARLO (por si Start() no se ejecutó aún)
+        if (audioManager == null)
+        {
+            Debug.Log("[MenuManager] 🔍 Buscando AudioManager en ShowMenuSequence...");
+            audioManager = FindFirstObjectByType<AudioManager>();
+
+            // Segundo intento esperando un frame
+            if (audioManager == null)
+            {
+                yield return null;
+                audioManager = FindFirstObjectByType<AudioManager>();
+            }
+        }
 
         if (audioManager != null)
         {
+            Debug.Log("[MenuManager] 🎵 Llamando a PlayAmbientMusic()...");
             audioManager.PlayAmbientMusic();
-        }
-    }
 
-    IEnumerator FadeInMenu()
-    {
-        float elapsed = 0f;
+            // ✅ VERIFICAR si realmente está sonando
+            yield return new WaitForSeconds(0.1f);
 
-        while (elapsed < fadeInDuration)
-        {
-            elapsed += Time.deltaTime;
-            if (menuCanvasGroup != null)
+            AudioSource[] sources = audioManager.GetComponents<AudioSource>();
+            foreach (var src in sources)
             {
-                menuCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsed / fadeInDuration);
+                if (src.isPlaying)
+                {
+                    Debug.Log($"[MenuManager] ✅ AudioSource está reproduciendo: {src.clip?.name ?? "null"} - Volume: {src.volume}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[MenuManager] ⚠️ AudioSource NO está reproduciendo. Clip: {src.clip?.name ?? "null"}");
+                }
             }
-            yield return null;
+        }
+        else
+        {
+            Debug.LogError("[MenuManager] ❌❌❌ NO SE ENCONTRÓ AudioManager - LA MÚSICA NO PUEDE SONAR");
+            Debug.LogError("[MenuManager] Asegúrate de que existe un GameObject con el script AudioManager en la escena");
         }
 
-        menuCanvasGroup.alpha = 1f;
+        yield return new WaitForSeconds(0.5f);
+
+        if (menuCanvasGroup != null)
+        {
+            float elapsed = 0f;
+            float duration = 1f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                menuCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsed / duration);
+                yield return null;
+            }
+            menuCanvasGroup.alpha = 1f;
+            menuCanvasGroup.interactable = true;
+            menuCanvasGroup.blocksRaycasts = true;
+        }
     }
 
-    void OnPlayButtonClicked()
+    void OnPlayClicked()
     {
-        if (isTransitioning) return;
-
-        isTransitioning = true;
-        StartCoroutine(PlayButtonSequence());
+        if (audioManager != null) audioManager.PlayButtonClick();
+        if (menuCanvasGroup != null)
+        {
+            menuCanvasGroup.interactable = false;
+            menuCanvasGroup.blocksRaycasts = false;
+        }
+        StartCoroutine(PlaySequence());
     }
 
-    IEnumerator PlayButtonSequence()
+    IEnumerator PlaySequence()
     {
-        // 1. Sonido de clic épico
-        if (audioManager != null)
-        {
-            audioManager.PlayButtonClick();
-        }
+        yield return StartCoroutine(FadeMenu(1f, 0f, 0.6f));
 
-        // 2. Animación de escala del botón
-        yield return StartCoroutine(ButtonPressAnimation(playButton.transform));
+        if (doorTransform != null && arCamera != null)
+            yield return StartCoroutine(ZoomToDoor());
+        else
+            yield return new WaitForSeconds(0.5f);
 
-        // 3. Esperar un momento
-        yield return new WaitForSeconds(0.3f);
-
-        // 4. Sonido de zoom/whoosh
-        if (audioManager != null)
-        {
-            audioManager.PlayZoomSound();
-        }
-
-        // 5. Activar partículas de la puerta
         if (doorGlow != null)
-        {
             doorGlow.ActivateDoorGlow();
-        }
 
-        // 6. Fade out del menú
-        yield return StartCoroutine(FadeOutMenu());
-
-        // 7. Zoom de cámara hacia la puerta
-        yield return StartCoroutine(ZoomToDoor());
-
-        // 8. Sonido de puerta abriéndose
         if (audioManager != null)
-        {
             audioManager.PlayDoorOpenSound();
-        }
 
-        // 9. Esperar un poco más
-        yield return new WaitForSeconds(doorOpenDelay);
-
-        // 10. Cargar la escena del juego
-        LoadGameScene();
+        Debug.Log("[MenuManager] Secuencia Play completada");
     }
 
-    IEnumerator ButtonPressAnimation(Transform buttonTransform)
+    IEnumerator FadeMenu(float from, float to, float duration)
     {
-        Vector3 originalScale = buttonTransform.localScale;
-        Vector3 pressedScale = originalScale * 0.9f;
-
-        float duration = 0.1f;
         float elapsed = 0f;
-
-        // Press down
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            buttonTransform.localScale = Vector3.Lerp(originalScale, pressedScale, elapsed / duration);
-            yield return null;
-        }
-
-        elapsed = 0f;
-
-        // Release
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            buttonTransform.localScale = Vector3.Lerp(pressedScale, originalScale * 1.1f, elapsed / duration);
-            yield return null;
-        }
-
-        elapsed = 0f;
-
-        // Return to normal
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            buttonTransform.localScale = Vector3.Lerp(originalScale * 1.1f, originalScale, elapsed / duration);
-            yield return null;
-        }
-    }
-
-    IEnumerator FadeOutMenu()
-    {
-        float duration = 1f;
-        float elapsed = 0f;
-
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             if (menuCanvasGroup != null)
-            {
-                menuCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsed / duration);
-            }
+                menuCanvasGroup.alpha = Mathf.Lerp(from, to, elapsed / duration);
             yield return null;
         }
-
-        menuCanvasGroup.alpha = 0f;
+        if (menuCanvasGroup != null)
+            menuCanvasGroup.alpha = to;
     }
 
     IEnumerator ZoomToDoor()
     {
-        // Aquí puedes agregar una animación de cámara hacia la puerta
-        // Por ahora un simple shake o movimiento
+        Vector3 startPos = arCamera.transform.position;
+        Quaternion startRot = arCamera.transform.rotation;
+        Vector3 doorPos = doorTransform.position;
+        Vector3 dirToDoor = (doorPos - startPos).normalized;
+        Vector3 targetPos = doorPos - dirToDoor * zoomDistance;
+        Quaternion targetRot = Quaternion.LookRotation(doorPos - targetPos);
 
-        Transform cameraTransform = Camera.main.transform;
-        Vector3 originalPosition = cameraTransform.localPosition;
-        Vector3 targetPosition = originalPosition + new Vector3(0, 0, 1.5f); // Acercar
-
-        float duration = 2f;
         float elapsed = 0f;
-
-        while (elapsed < duration)
+        while (elapsed < zoomDuration)
         {
             elapsed += Time.deltaTime;
-            cameraTransform.localPosition = Vector3.Lerp(originalPosition, targetPosition, elapsed / duration);
+            float t = Mathf.SmoothStep(0f, 1f, elapsed / zoomDuration);
+            arCamera.transform.position = Vector3.Lerp(startPos, targetPos, t);
+            arCamera.transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
             yield return null;
         }
+        arCamera.transform.position = targetPos;
+        arCamera.transform.rotation = targetRot;
     }
 
-    void LoadGameScene()
+    void OnMultiClicked()
     {
-        // Cambiar "GameScene" por el nombre de tu escena de juego
-        SceneManager.LoadScene("GameScene");
+        if (audioManager != null) audioManager.PlayButtonClick();
     }
 
-    void OnMultiplayerButtonClicked()
+    void OnOptionsClicked()
     {
-        if (audioManager != null)
-        {
-            audioManager.PlayButtonClick();
-        }
-
-        // Aquí puedes agregar la lógica para multijugador
-        Debug.Log("Multijugador presionado - Por implementar");
-    }
-
-    void OnOptionsButtonClicked()
-    {
-        if (audioManager != null)
-        {
-            audioManager.PlayButtonClick();
-        }
-
-        // Aquí puedes abrir un panel de opciones
-        Debug.Log("Opciones presionado - Por implementar");
+        if (audioManager != null) audioManager.PlayButtonClick();
     }
 }

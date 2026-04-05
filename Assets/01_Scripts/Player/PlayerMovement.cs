@@ -3,68 +3,125 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
+    public float rotationSpeed = 10f;
+
+    [Header("Ataque")]
+    public float maxHealth = 100f;
+    private float currentHealth;
+    public float attackCooldown = 1f; // tiempo entre ataques
+    public float attackDuration = 0.5f; // cuánto dura el ataque (para collider)
+    public Collider swordCollider; // collider de la espada
+
+    private float lastAttackTime = -Mathf.Infinity;
+    private bool isAttacking = false;
 
     private Animator anim;
     private CapsuleCollider col;
+    private Rigidbody rb;
     private bool isDead = false;
 
     void Start()
     {
         anim = GetComponent<Animator>();
         col = GetComponent<CapsuleCollider>();
+        rb = GetComponent<Rigidbody>();
+        currentHealth = maxHealth;
+
+        // Asegurarse que la espada empieza desactivada
+        if (swordCollider != null)
+            swordCollider.enabled = false;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        // Si está muerto, no hace nada más
-        if (isDead) return;
+        if (isDead || isAttacking) return; // 🚫 no se mueve mientras ataca
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
         Vector3 move = new Vector3(h, 0, v).normalized;
 
-        // Movimiento
-        transform.Translate(move * speed * Time.deltaTime, Space.World);
+        Vector3 velocity = new Vector3(move.x * speed, rb.linearVelocity.y, move.z * speed);
+        rb.linearVelocity = velocity;
 
-        // Rotación
         if (move != Vector3.zero)
         {
             Quaternion rot = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rot, 10f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rot, rotationSpeed * Time.deltaTime);
         }
 
-        // Animación movimiento
-        float velocidad = move.magnitude;
-        anim.SetFloat("Speed", velocidad);
+        anim.SetFloat("Speed", move.magnitude);
+    }
 
-        // Ataque
-        if (Input.GetKeyDown(KeyCode.Space))
+    void Update()
+    {
+        if (isDead) return;
+
+        // 🗡️ Ataque con cooldown
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
         {
-            anim.SetTrigger("Attack");
+            StartCoroutine(Attack());
         }
 
-        // Muerte
         if (Input.GetKeyDown(KeyCode.K))
         {
             Morir();
         }
     }
 
+    System.Collections.IEnumerator Attack()
+    {
+        isAttacking = true;
+        lastAttackTime = Time.time;
+
+        anim.SetTrigger("Attack");
+
+        if (swordCollider != null)
+        {
+            // 🔥 Obtener script de la espada
+            Sword sword = swordCollider.GetComponent<Sword>();
+
+            if (sword != null)
+            {
+                sword.StartAttack(); // resetear enemigos golpeados
+            }
+
+            swordCollider.enabled = true; // activar collider
+        }
+
+        yield return new WaitForSeconds(attackDuration);
+
+        if (swordCollider != null)
+            swordCollider.enabled = false;
+
+        isAttacking = false;
+    }
+
     void Morir()
     {
         isDead = true;
 
-        // Activar animación de muerte
         anim.SetTrigger("Dead");
-
-        // Detener movimiento
         anim.SetFloat("Speed", 0);
 
-        // Desactivar collider para que no flote
+        rb.linearVelocity = Vector3.zero;
+
         if (col != null)
-        {
             col.enabled = false;
+
+        rb.isKinematic = true;
+    }
+    public void TakeDamage(float damage)
+    {
+        if (isDead) return;
+
+        currentHealth -= damage;
+
+        Debug.Log("Player recibió daño: " + damage + " | Vida restante: " + currentHealth);
+
+        if (currentHealth <= 0)
+        {
+            Morir();
         }
     }
 }
