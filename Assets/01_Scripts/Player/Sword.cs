@@ -29,5 +29,19 @@ public class Sword : MonoBehaviour
                 hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
             }
         }
+        if (other.CompareTag("Book"))
+        {
+            // ❌ ya fue golpeado en este ataque
+            if (hitEnemies.Contains(other.gameObject))
+                return;
+
+            Book book = other.GetComponent<Book>();
+
+            if (book != null)
+            {
+                book.TakeDamage(damage);
+                hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
+            }
+        }
     }
 }
