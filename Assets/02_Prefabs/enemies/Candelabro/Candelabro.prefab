@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6182382982531574512
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3200714884340139389}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3200714884340139389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6182382982531574512}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6487427690470754476}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &6741115005455281991
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.06
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.82
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_Name
+      value: Candelabro
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_TagString
+      value: Candelabro
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3200714884340139389}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -6146603433023630026}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1840520649703530844}
+  m_SourcePrefab: {fileID: 100100000, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+--- !u!1 &5858103052505616918 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+  m_PrefabInstance: {fileID: 6741115005455281991}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-6146603433023630026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858103052505616918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79cb4b370385caec59689d0bce43e605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Candelabro
+  health: 20
+  detectionRange: 12
+  attackRange: 6
+  rotationSpeed: 5
+  fireRate: 1.5
+  bulletPrefab: {fileID: 1996226308163025481, guid: e494651d05c8c5f64a5aec1c3bc56ee9, type: 3}
+  firePoint: {fileID: 3200714884340139389}
+  bone: {fileID: 8795586073469458389}
+--- !u!136 &1840520649703530844
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858103052505616918}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.20408362
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0.010639548, y: 0, z: 0}
+--- !u!4 &6487427690470754476 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+  m_PrefabInstance: {fileID: 6741115005455281991}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8795586073469458389 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2854563699051640978, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+  m_PrefabInstance: {fileID: 6741115005455281991}
+  m_PrefabAsset: {fileID: 0}
