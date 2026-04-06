@@ -8,12 +8,22 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ataque")]
     public float maxHealth = 100f;
     private float currentHealth;
-    public float attackCooldown = 1f; // tiempo entre ataques
-    public float attackDuration = 0.5f; // cuánto dura el ataque (para collider)
-    public Collider swordCollider; // collider de la espada
-
+    public float attackCooldown = 1f;
+    public float attackDuration = 0.5f;
+    public Collider swordCollider;
     private float lastAttackTime = -Mathf.Infinity;
     private bool isAttacking = false;
+
+    [Header("Sonidos")]
+    public AudioClip[] walkSounds; // múltiples pasos para variedad
+    public AudioClip attackVoiceSound; // "wooah"
+    public AudioClip swordSwingSound; // sonido de espada
+    public AudioClip takeDamageSound; // cuando recibe daño
+    public AudioClip deathSound; // cuando muere
+    public float walkSoundInterval = 0.5f; // cada cuánto suena el paso
+
+    private AudioSource audioSource;
+    private float lastWalkSoundTime = 0f;
 
     private Animator anim;
     private CapsuleCollider col;
@@ -25,22 +35,27 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
         col = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
+
+        // 🔊 Configurar AudioSource
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
         currentHealth = maxHealth;
 
-        // Asegurarse que la espada empieza desactivada
         if (swordCollider != null)
             swordCollider.enabled = false;
     }
 
     void FixedUpdate()
     {
-        if (isDead || isAttacking) return; // 🚫 no se mueve mientras ataca
+        if (isDead || isAttacking) return;
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
-
         Vector3 move = new Vector3(h, 0, v).normalized;
-
         Vector3 velocity = new Vector3(move.x * speed, rb.linearVelocity.y, move.z * speed);
         rb.linearVelocity = velocity;
 
@@ -51,13 +66,19 @@ public class PlayerMovement : MonoBehaviour
         }
 
         anim.SetFloat("Speed", move.magnitude);
+
+        // 🚶 Sonidos de caminar
+        if (move.magnitude > 0.1f && Time.time - lastWalkSoundTime >= walkSoundInterval)
+        {
+            PlayWalkSound();
+            lastWalkSoundTime = Time.time;
+        }
     }
 
     void Update()
     {
         if (isDead) return;
 
-        // 🗡️ Ataque con cooldown
         if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
         {
             StartCoroutine(Attack());
@@ -73,20 +94,19 @@ public class PlayerMovement : MonoBehaviour
     {
         isAttacking = true;
         lastAttackTime = Time.time;
-
         anim.SetTrigger("Attack");
+
+        // 🔊 Reproducir sonidos de ataque
+        PlayAttackSounds();
 
         if (swordCollider != null)
         {
-            // 🔥 Obtener script de la espada
             Sword sword = swordCollider.GetComponent<Sword>();
-
             if (sword != null)
             {
-                sword.StartAttack(); // resetear enemigos golpeados
+                sword.StartAttack();
             }
-
-            swordCollider.enabled = true; // activar collider
+            swordCollider.enabled = true;
         }
 
         yield return new WaitForSeconds(attackDuration);
@@ -100,28 +120,66 @@ public class PlayerMovement : MonoBehaviour
     void Morir()
     {
         isDead = true;
-
         anim.SetTrigger("Dead");
         anim.SetFloat("Speed", 0);
-
         rb.linearVelocity = Vector3.zero;
 
         if (col != null)
             col.enabled = false;
 
         rb.isKinematic = true;
+
+        // 🔊 Sonido de muerte
+        PlaySound(deathSound);
     }
+
     public void TakeDamage(float damage)
     {
         if (isDead) return;
 
         currentHealth -= damage;
-
         Debug.Log("Player recibió daño: " + damage + " | Vida restante: " + currentHealth);
+
+        // 🔊 Sonido de daño
+        PlaySound(takeDamageSound);
 
         if (currentHealth <= 0)
         {
             Morir();
+        }
+    }
+
+    // 🔊 Métodos de sonido
+    void PlayWalkSound()
+    {
+        if (walkSounds != null && walkSounds.Length > 0)
+        {
+            // Elegir sonido aleatorio para variedad
+            AudioClip clip = walkSounds[Random.Range(0, walkSounds.Length)];
+            audioSource.PlayOneShot(clip, 0.5f); // volumen 50%
+        }
+    }
+
+    void PlayAttackSounds()
+    {
+        // Reproducir voz "wooah"
+        if (attackVoiceSound != null)
+        {
+            audioSource.PlayOneShot(attackVoiceSound, 0.8f);
+        }
+
+        // Reproducir sonido de espada (con pequeño delay)
+        if (swordSwingSound != null)
+        {
+            audioSource.PlayOneShot(swordSwingSound, 0.7f);
+        }
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }

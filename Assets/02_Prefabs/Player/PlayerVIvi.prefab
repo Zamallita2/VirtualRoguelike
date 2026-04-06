@@ -108,6 +108,13 @@ MonoBehaviour:
   attackCooldown: 1
   attackDuration: 0.5
   swordCollider: {fileID: 8141217006097031706}
+  walkSounds:
+  - {fileID: 8300000, guid: 1edcad2699694a84db13164611a8909f, type: 3}
+  attackVoiceSound: {fileID: 8300000, guid: c1e8f8d21f3436a4b8af9002c1bb770e, type: 3}
+  swordSwingSound: {fileID: 8300000, guid: 6daa19909fec1a64d8fc2afd5eb893ea, type: 3}
+  takeDamageSound: {fileID: 8300000, guid: ffa67efa8f1d1c24bb3f56589ed7682f, type: 3}
+  deathSound: {fileID: 8300000, guid: c1489bcc25a2f434fa349dc8fb541c0f, type: 3}
+  walkSoundInterval: 0.5
 --- !u!54 &7109964806724334343
 Rigidbody:
   m_ObjectHideFlags: 0
