@@ -43,5 +43,19 @@ public class Sword : MonoBehaviour
                 hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
             }
         }
+        if (other.CompareTag("Candelabro"))
+        {
+            // ❌ ya fue golpeado en este ataque
+            if (hitEnemies.Contains(other.gameObject))
+                return;
+
+            Candelabro cande = other.GetComponent<Candelabro>();
+
+            if (cande != null)
+            {
+                cande.TakeDamage(damage);
+                hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
+            }
+        }
     }
 }
