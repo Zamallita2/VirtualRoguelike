@@ -10,7 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 7613d5a4810fc4980adc516b5365ba25, type: 3}
       propertyPath: m_LocalScale.x
-      value: 200
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7613d5a4810fc4980adc516b5365ba25, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7613d5a4810fc4980adc516b5365ba25, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7613d5a4810fc4980adc516b5365ba25, type: 3}
       propertyPath: m_LocalPosition.x
@@ -84,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9365099ae267d770e837556956f2a801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  speed: 20
+  speed: 2
   lifeTime: 1
   damage: 2
 --- !u!135 &606592659412397445

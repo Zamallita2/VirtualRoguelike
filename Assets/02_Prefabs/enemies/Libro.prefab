@@ -40,16 +40,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.097
+      value: -0.168
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.574
+      value: -0.35271025
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.15049
+      value: -0.167
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalRotation.w
@@ -57,15 +69,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -159,19 +171,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9cdf75a76ec32d6baef6e3ab60166e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Book
-  health: 20
-  detectionRange: 10
+  health: 10
+  detectionRange: 0.7
   rotationSpeed: 5
   fireRate: 2
   bulletPrefab: {fileID: 2812093026207817297, guid: 0421c925c4ea70600bb0083c603e11c1, type: 3}
   firePoint: {fileID: 7508231638764680555}
   leftBone: {fileID: 3641457596183154020}
   rightBone: {fileID: 1046248228818432425}
-  detectSound: {fileID: 8300000, guid: c2399052f93661a44aa1f63753b0c9bc, type: 3}
-  pageFlipSound: {fileID: 0}
-  shootSound: {fileID: 0}
-  hitSound: {fileID: 0}
-  deathSound: {fileID: 0}
+  detectSound: {fileID: 8300000, guid: d53f68c20b8419e44912b7d1b8aae78e, type: 3}
+  pageFlipSound: {fileID: 8300000, guid: c2399052f93661a44aa1f63753b0c9bc, type: 3}
+  shootSound: {fileID: 8300000, guid: 9fe077a9f8ef51544a8a6af960bdb322, type: 3}
+  hitSound: {fileID: 8300000, guid: 7206483d330b87542995df418da9dc36, type: 3}
+  deathSound: {fileID: 8300000, guid: 579dbc6fb12c80740a31dfe6179415da, type: 3}
   ambientWhisperSound: {fileID: 0}
 --- !u!136 &1485796698716785384
 CapsuleCollider:
@@ -211,15 +223,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7881730952556575689, guid: 064ee5064a6b2b6d28a7c5f54f7027c4, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.7
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7881730952556575689, guid: 064ee5064a6b2b6d28a7c5f54f7027c4, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.7
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7881730952556575689, guid: 064ee5064a6b2b6d28a7c5f54f7027c4, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.7
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7881730952556575689, guid: 064ee5064a6b2b6d28a7c5f54f7027c4, type: 3}
       propertyPath: m_LocalPosition.x

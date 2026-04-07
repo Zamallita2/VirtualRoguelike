@@ -15,11 +15,7 @@ public class Sword : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         TryHit(other);
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        TryHit(other);
+        Debug.Log("Le diste a algo");
     }
 
     private void TryHit(Collider other)
@@ -32,7 +28,7 @@ public class Sword : MonoBehaviour
 
             enemy.TakeDamage(damage);
             hitEnemies.Add(id);
-            Debug.Log("⚔️ Golpeaste al enemigo");
+            Debug.Log("⚔️ Golpeaste a " + other.name.ToString() + " con " + damage.ToString());
             return;
         }
 
@@ -58,32 +54,32 @@ public class Sword : MonoBehaviour
             hitEnemies.Add(id);
             Debug.Log("⚔️ Golpeaste enemigo");
         }
+
         if (other.CompareTag("Book"))
         {
-            // ❌ ya fue golpeado en este ataque
-            if (hitEnemies.Contains(other.gameObject))
-                return;
+            int id = other.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
 
             Book book = other.GetComponent<Book>();
 
             if (book != null)
             {
                 book.TakeDamage(damage);
-                hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
+                hitEnemies.Add(id);
             }
         }
+
         if (other.CompareTag("Candelabro"))
         {
-            // ❌ ya fue golpeado en este ataque
-            if (hitEnemies.Contains(other.gameObject))
-                return;
+            int id = other.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
 
             Candelabro cande = other.GetComponent<Candelabro>();
 
             if (cande != null)
             {
                 cande.TakeDamage(damage);
-                hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
+                hitEnemies.Add(id);
             }
         }
     }

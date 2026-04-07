@@ -20,7 +20,7 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Health")]
     public float maxHealth = 50f;
-    private float currentHealth;
+    public float currentHealth;
 
     [Header("Animator")]
     public Animator anim;
@@ -79,7 +79,6 @@ public class EnemyAI : MonoBehaviour
         if (rb != null)
         {
             rb.isKinematic = false;
-            rb.useGravity = false;
             rb.freezeRotation = true;
         }
         if (enemyWeapon != null) enemyWeapon.SetDamageActive(false);
@@ -164,7 +163,7 @@ public class EnemyAI : MonoBehaviour
         if (anim != null) anim.SetTrigger(firstAttackTrigger);
         PlayClip(firstAttackClip);
         if (enemyWeapon != null)
-            StartCoroutine(ActivateWeaponForDamage(firstAttackHitDelay, criticalDamage));
+            StartCoroutine(ActivateWeaponForDamage(firstAttackHitDelay, criticalDamage, firstAttackDuration));
         yield return new WaitForSeconds(firstAttackDuration);
         if (!isDead)
         {
@@ -183,13 +182,13 @@ public class EnemyAI : MonoBehaviour
         if (anim != null) anim.SetTrigger(normalAttackTrigger);
         PlayClip(normalAttackClip);
         if (enemyWeapon != null)
-            StartCoroutine(ActivateWeaponForDamage(normalAttackHitDelay, normalDamage));
+            StartCoroutine(ActivateWeaponForDamage(normalAttackHitDelay, normalDamage, normalAttackDuration));
         yield return new WaitForSeconds(normalAttackDuration);
         if (!isDead) currentState = EnemyState.Chase;
         isBusy = false;
     }
 
-    private IEnumerator ActivateWeaponForDamage(float delay, float damageAmount)
+    private IEnumerator ActivateWeaponForDamage(float delay, float damageAmount, float duration)
     {
         yield return new WaitForSeconds(delay);
         if (enemyWeapon != null && !isDead)
@@ -197,7 +196,7 @@ public class EnemyAI : MonoBehaviour
             enemyWeapon.SetDamage(damageAmount);
             enemyWeapon.SetDamageActive(true);
             Debug.Log($"🗡️ Arma activada con daño: {damageAmount} ({(damageAmount == criticalDamage ? "CRÍTICO" : "NORMAL")})");
-            yield return new WaitForSeconds(0.6f);
+            yield return new WaitForSeconds(duration-0.05f);
             enemyWeapon.SetDamageActive(false);
         }
     }
