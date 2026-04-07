@@ -119,13 +119,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Candelabro
   health: 20
-  detectionRange: 12
-  attackRange: 6
+  detectionRange: 2
+  attackRange: 1
   rotationSpeed: 5
-  fireRate: 1.5
+  fireRate: 0.5
   bulletPrefab: {fileID: 1996226308163025481, guid: e494651d05c8c5f64a5aec1c3bc56ee9, type: 3}
   firePoint: {fileID: 3200714884340139389}
   bone: {fileID: 8795586073469458389}
+  detectSound: {fileID: 8300000, guid: 75bf5e5b1967ec44e9f6a2848ca085af, type: 3}
+  shootSound: {fileID: 8300000, guid: 600233d541a9196418e43c430a70e582, type: 3}
+  hitSound: {fileID: 8300000, guid: 0fe2d6fc116fdb54ab97342535da611f, type: 3}
+  deathSound: {fileID: 8300000, guid: 8af609dcac8ac5b499843a6bb44d2f32, type: 3}
+  flameIdleSound: {fileID: 8300000, guid: fed1216fa9fd48743b225755591d7d3d, type: 3}
 --- !u!136 &1840520649703530844
 CapsuleCollider:
   m_ObjectHideFlags: 0
