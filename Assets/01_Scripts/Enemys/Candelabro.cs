@@ -20,12 +20,21 @@ public class Candelabro : MonoBehaviour
     [Header("Bone")]
     public Transform bone;
 
+    [Header("Sonidos")]
+    public AudioClip detectSound; // cuando detecta al jugador
+    public AudioClip shootSound; // disparo de las 5 balas
+    public AudioClip hitSound; // cuando recibe daño
+    public AudioClip deathSound; // al morir
+    public AudioClip flameIdleSound; // fuego constante (loop)
+
     private Transform player;
     private float fireTimer;
     private bool isAttacking = false;
-
+    private bool hasDetected = false;
     private Quaternion boneIdleRot;
     private Quaternion boneAttackRot;
+    private AudioSource audioSource;
+    private AudioSource flameAudioSource; // para el loop del fuego
 
     void Start()
     {
@@ -36,7 +45,27 @@ public class Candelabro : MonoBehaviour
         if (bone != null)
         {
             boneIdleRot = bone.localRotation;
-            boneAttackRot = Quaternion.Euler(90f, 0f, 0f); // X negativo hasta 90
+            boneAttackRot = Quaternion.Euler(90f, 0f, 0f);
+        }
+
+        // 🔊 Configurar AudioSources
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        // AudioSource separado para el fuego loop
+        flameAudioSource = gameObject.AddComponent<AudioSource>();
+        flameAudioSource.loop = true;
+        flameAudioSource.volume = 0.3f;
+        flameAudioSource.spatialBlend = 1f; // 3D
+        flameAudioSource.maxDistance = 15f;
+
+        if (flameIdleSound != null)
+        {
+            flameAudioSource.clip = flameIdleSound;
+            flameAudioSource.Play();
         }
     }
 
@@ -48,6 +77,13 @@ public class Candelabro : MonoBehaviour
 
         if (distance <= detectionRange)
         {
+            // 🔊 Sonido de detección (solo una vez)
+            if (!hasDetected)
+            {
+                PlaySound(detectSound, 0.6f);
+                hasDetected = true;
+            }
+
             LookAtPlayer();
 
             if (distance <= attackRange)
@@ -64,6 +100,7 @@ public class Candelabro : MonoBehaviour
         else
         {
             isAttacking = false;
+            hasDetected = false; // reset para cuando vuelva a detectar
             StopAttackMode();
         }
     }
@@ -72,11 +109,9 @@ public class Candelabro : MonoBehaviour
     {
         Vector3 dir = player.position - transform.position;
         dir.y = 0f;
-
         if (dir == Vector3.zero) return;
 
         Quaternion targetRot = Quaternion.LookRotation(dir);
-
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             targetRot,
@@ -113,7 +148,6 @@ public class Candelabro : MonoBehaviour
     void HandleShooting()
     {
         fireTimer += Time.deltaTime;
-
         if (fireTimer >= fireRate)
         {
             ShootSpread();
@@ -123,13 +157,14 @@ public class Candelabro : MonoBehaviour
 
     void ShootSpread()
     {
-        // 5 balitas en abanico (Y variando)
+        // 🔊 Sonido de disparo
+        PlaySound(shootSound, 0.8f);
+
+        // 5 balitas en abanico
         for (int i = -2; i <= 2; i++)
         {
-            float angleOffset = i * 5f; // -10, -5, 0, 5, 10
-
+            float angleOffset = i * 5f;
             Quaternion rotation = firePoint.rotation * Quaternion.Euler(0f, angleOffset, 0f);
-
             Instantiate(bulletPrefab, firePoint.position, rotation);
         }
     }
@@ -137,8 +172,10 @@ public class Candelabro : MonoBehaviour
     public void TakeDamage(int damage)
     {
         health -= damage;
-
         Debug.Log(gameObject.name + " daño: " + damage + " | HP: " + health);
+
+        // 🔊 Sonido de golpe
+        PlaySound(hitSound, 0.7f);
 
         if (health <= 0)
         {
@@ -149,6 +186,22 @@ public class Candelabro : MonoBehaviour
     void Die()
     {
         Debug.Log(gameObject.name + " murió unu 💀");
-        Destroy(gameObject);
+
+        // 🔊 Sonido de muerte
+        PlaySound(deathSound, 1f);
+
+        // Detener el fuego loop
+        if (flameAudioSource != null)
+            flameAudioSource.Stop();
+
+        Destroy(gameObject, 1f); // delay para que suene la muerte
+    }
+
+    void PlaySound(AudioClip clip, float volume = 1f)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip, volume);
+        }
     }
 }

@@ -5,9 +5,8 @@ public class Sword : MonoBehaviour
 {
     public int damage = 10;
 
-    private HashSet<GameObject> hitEnemies = new HashSet<GameObject>();
+    private HashSet<int> hitEnemies = new HashSet<int>();
 
-    // 🔥 Llamado desde el player al iniciar ataque
     public void StartAttack()
     {
         hitEnemies.Clear();
@@ -15,19 +14,49 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        TryHit(other);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        TryHit(other);
+    }
+
+    private void TryHit(Collider other)
+    {
+        EnemyAI enemy = other.GetComponentInParent<EnemyAI>();
+        if (enemy != null)
         {
-            // ❌ ya fue golpeado en este ataque
-            if (hitEnemies.Contains(other.gameObject))
-                return;
+            int id = enemy.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
 
-            Dummy dummy = other.GetComponent<Dummy>();
+            enemy.TakeDamage(damage);
+            hitEnemies.Add(id);
+            Debug.Log("⚔️ Golpeaste al enemigo");
+            return;
+        }
 
-            if (dummy != null)
-            {
-                dummy.TakeDamage(damage);
-                hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
-            }
+        BossAI boss = other.GetComponentInParent<BossAI>();
+        if (boss != null)
+        {
+            int id = boss.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
+
+            boss.TakeDamage(damage);
+            hitEnemies.Add(id);
+            Debug.Log("⚔️ Golpeaste al BOSS");
+            return;
+        }
+
+        Dummy dummy = other.GetComponentInParent<Dummy>();
+        if (dummy != null)
+        {
+            int id = dummy.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
+
+            dummy.TakeDamage(damage);
+            hitEnemies.Add(id);
+            Debug.Log("⚔️ Golpeaste enemigo");
         }
         if (other.CompareTag("Book"))
         {
