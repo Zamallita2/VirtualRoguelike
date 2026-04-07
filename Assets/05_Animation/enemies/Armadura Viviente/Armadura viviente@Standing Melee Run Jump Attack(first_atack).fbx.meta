@@ -34,8 +34,8 @@ ModelImporter:
       name: Standing Melee Run Jump Attack(first_atack)
       takeName: mixamo.com
       internalID: -203655887218126122
-      firstFrame: 0
-      lastFrame: 110
+      firstFrame: 20
+      lastFrame: 70
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
