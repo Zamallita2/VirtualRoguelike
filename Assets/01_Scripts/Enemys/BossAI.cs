@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class BossAI : MonoBehaviour
 {
@@ -9,27 +8,31 @@ public class BossAI : MonoBehaviour
 
     [Header("Referencias")]
     public Transform player;
-    public NavMeshAgent agent;
     public Animator anim;
     public AudioSource audioSource;
     public PlayerMovement playerMovement;
+    public Rigidbody rb;
 
     [Header("ESPADA")]
-    public Collider weaponCollider;
-    public BossSword bossSword;
+    public BossSword bossSword;   // Script que controla el daño
 
     [Header("Rangos")]
-    public float detectRange = 15f;
+    public float detectionRange = 15f;
     public float loseRange = 35f;
     public float attackRange = 2.5f;
 
+    [Header("Movimiento")]
+    public float moveSpeed = 3.5f;
+    public float rotationSpeed = 8f;
+
     [Header("Cooldowns")]
-    public float attackCooldown = 2f;
-    public float roarInterval = 12f;
+    public float attackCooldown = 1.8f;    // Entre ataques normales (Attack1/Attack2)
+    public float furyCooldown = 15f;       // Cada cuánto hace Fury
+    public float talkDuration = 4f;        // Duración de la charla inicial (o ajusta con los clips)
 
     [Header("Vida")]
     public float maxHealth = 500f;
-    float currentHealth;
+    private float currentHealth;
 
     [Header("Audios")]
     public AudioClip[] talkClips;
@@ -39,30 +42,42 @@ public class BossAI : MonoBehaviour
     public AudioClip deathClip;
 
     [Header("Invocación")]
-    public GameObject summonPrefab;
+    public GameObject summonPrefab;   // El enemigo que se invoca (Ej: Armadura Viviente)
+    public int summonCount = 4;
+    public float summonRadius = 3f;
 
-    bool isBusy = false;
-    bool isAttacking = false;
-    bool isSummoning = false;
-    bool hasSummoned = false;
+    // Estados internos
+    private bool isBusy = false;
+    private bool isAttacking = false;
+    private bool isSummoning = false;
+    private bool hasSummoned = false;
 
-    float lastAttack;
-    float nextRoarTime;
+    private float lastAttackTime;
+    private float lastFuryTime;
 
-    Vector3 startPos;
+    private Vector3 startPos;
 
     void Start()
     {
         currentHealth = maxHealth;
         startPos = transform.position;
 
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        playerMovement = player.GetComponent<PlayerMovement>();
+        if (player == null)
+            player = GameObject.FindGameObjectWithTag("Player").transform;
+        if (playerMovement == null && player != null)
+            playerMovement = player.GetComponent<PlayerMovement>();
 
-        nextRoarTime = Time.time + 5f;
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.useGravity = false;
+            rb.freezeRotation = true;
+        }
 
-        if (weaponCollider != null)
-            weaponCollider.enabled = false;
+        lastFuryTime = -furyCooldown; // Para que no haga fury al inicio inmediatamente
+        lastAttackTime = -attackCooldown;
     }
 
     void Update()
@@ -71,210 +86,236 @@ public class BossAI : MonoBehaviour
 
         float dist = Vector3.Distance(transform.position, player.position);
 
-        anim.SetBool("IsBusy", isBusy);
-
-        // DETECTAR PLAYER
-        if (state == State.Idle && dist <= detectRange)
+        // Detectar jugador desde Idle
+        if (state == State.Idle && dist <= detectionRange)
         {
             StartCoroutine(StartCombat());
             return;
         }
 
-        // RESET
+        // Reset si el jugador se aleja demasiado
         if (state != State.Idle && dist > loseRange)
         {
             ResetBoss();
             return;
         }
 
-        // 🔥 SUMMON PRIORIDAD
-        if (!hasSummoned && currentHealth <= maxHealth * 0.5f && !isSummoning)
+        // Invocación al 50% de vida (prioritaria)
+        if (!hasSummoned && currentHealth <= maxHealth * 0.5f && !isSummoning && !isBusy)
         {
-            StopAllCoroutines();
             StartCoroutine(Summon());
             return;
         }
 
-        // BLOQUEO
+        // Si está ocupado, no se mueve ni rota
         if (isBusy)
         {
-            ForceStop();
+            StopMovement();
+            return;
         }
-        else if (state == State.Combat)
+
+        if (state == State.Combat)
         {
-            // ROAR AUTOMÁTICO
-            if (Time.time >= nextRoarTime)
+            // Rotar hacia el jugador
+            FacePlayer();
+
+            // Verificar si debe hacer Fury (cada furyCooldown segundos)
+            if (Time.time >= lastFuryTime + furyCooldown)
             {
-                StartCoroutine(RoarAndFury());
+                StartCoroutine(FuryRoutine());
                 return;
             }
 
-            // PERSEGUIR
-            agent.isStopped = false;
-            agent.updatePosition = true;
-            agent.SetDestination(player.position);
+            // Moverse hacia el jugador
+            MoveTowardsPlayer();
 
-            // ATAQUE
-            if (dist <= attackRange && Time.time >= lastAttack + attackCooldown)
+            // Ataque normal si está en rango y cooldown listo
+            if (dist <= attackRange && Time.time >= lastAttackTime + attackCooldown)
             {
-                StartCoroutine(Attack());
+                StartCoroutine(AttackRoutine());
             }
         }
-
-        // SPEED
-        if (isBusy)
-            anim.SetFloat("Speed", 0f);
-        else
-            anim.SetFloat("Speed", agent.velocity.magnitude);
     }
 
-    // ================= BLOQUEO =================
-    void ForceStop()
+    // ================= MOVIMIENTO =================
+    void FacePlayer()
     {
-        if (agent.enabled)
-        {
-            agent.isStopped = true;
-            agent.velocity = Vector3.zero;
-            agent.ResetPath();
-            agent.updatePosition = false;
-        }
+        Vector3 dir = player.position - transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.001f) return;
+        Quaternion look = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.Slerp(transform.rotation, look, rotationSpeed * Time.deltaTime);
     }
 
-    // ================= COMBATE =================
+    void MoveTowardsPlayer()
+    {
+        Vector3 direction = (player.position - transform.position).normalized;
+        direction.y = 0f;
+        Vector3 targetVelocity = direction * moveSpeed;
+
+        if (rb != null)
+            rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+        else
+            transform.position += direction * moveSpeed * Time.deltaTime;
+
+        // Actualizar velocidad en Animator
+        if (anim != null)
+            anim.SetFloat("Speed", direction.magnitude > 0.1f ? moveSpeed : 0f);
+    }
+
+    void StopMovement()
+    {
+        if (rb != null)
+            rb.linearVelocity = Vector3.zero;
+        if (anim != null)
+            anim.SetFloat("Speed", 0f);
+    }
+
+    // ================= INICIO DEL COMBATE (TALK) =================
     IEnumerator StartCombat()
     {
         state = State.Talk;
         isBusy = true;
+        StopMovement();
 
-        ForceStop();
-
-        anim.SetTrigger("Talk");
+        if (anim != null) anim.SetTrigger("Talk");
         Debug.Log("🗣️ TALK");
 
-        foreach (var clip in talkClips)
+        // Reproducir todos los clips de diálogo (o usa talkDuration si no tienes clips)
+        if (talkClips != null && talkClips.Length > 0)
         {
-            audioSource.clip = clip;
-            audioSource.Play();
-            yield return new WaitForSeconds(clip.length);
+            foreach (var clip in talkClips)
+            {
+                if (clip != null && audioSource != null)
+                {
+                    audioSource.clip = clip;
+                    audioSource.Play();
+                    yield return new WaitForSeconds(clip.length);
+                }
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(talkDuration);
         }
 
-        yield return StartCoroutine(RoarAndFury());
+        yield return StartCoroutine(FuryRoutine()); // Primer rugido+Fury al empezar
 
         state = State.Combat;
         isBusy = false;
-        agent.updatePosition = true;
     }
 
-    // ================= ROAR + FURY =================
-    IEnumerator RoarAndFury()
+    // ================= FURY (RUGIDO + ATAQUE GIRATORIO) =================
+    IEnumerator FuryRoutine()
     {
         isBusy = true;
-        ForceStop();
+        StopMovement();
 
-        anim.SetTrigger("DoRoar");
+        // Rugido
+        if (anim != null) anim.SetTrigger("DoRoar");
         PlayRandom(roarClips);
         Debug.Log("🐲 ROAR");
+        yield return new WaitForSeconds(1f); // Ajusta según animación
 
-        yield return new WaitForSeconds(1f);
-
-        anim.SetTrigger("DoFury");
+        // Fury
+        if (anim != null) anim.SetTrigger("DoFury");
         Debug.Log("💀 FURY");
 
-        // 🔥 ACTIVAR ESPADA (FURY)
-        if (weaponCollider != null)
+        // Activar espada para daño
+        if (bossSword != null)
         {
             bossSword.StartAttack();
-            weaponCollider.enabled = true;
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.2f); // Duración del ataque Fury
 
-        if (weaponCollider != null)
-            weaponCollider.enabled = false;
+        // Desactivar espada
+        if (bossSword != null)
+        {
+            bossSword.EndAttack();
+        }
 
         yield return new WaitForSeconds(0.3f);
 
-        nextRoarTime = Time.time + roarInterval;
-
+        lastFuryTime = Time.time;
         isBusy = false;
-        agent.updatePosition = true;
     }
 
-    // ================= ATAQUE =================
-    IEnumerator Attack()
+    // ================= ATAQUE NORMAL (ATTACK1 O ATTACK2) =================
+    IEnumerator AttackRoutine()
     {
         if (isAttacking) yield break;
 
         isAttacking = true;
         isBusy = true;
+        StopMovement();
 
-        ForceStop();
-
+        // Elegir animación aleatoria
         if (Random.value < 0.5f)
             anim.SetTrigger("DoAttack1");
         else
             anim.SetTrigger("DoAttack2");
 
-        Debug.Log("⚔️ ATTACK");
+        Debug.Log("⚔️ ATTACK normal");
 
         if (Random.value < 0.2f)
             PlayRandom(attackVoice);
 
-        // 🔥 ACTIVAR ESPADA
-        if (weaponCollider != null)
-        {
+        // Activar espada
+        if (bossSword != null)
             bossSword.StartAttack();
-            weaponCollider.enabled = true;
-        }
 
+        // Tiempo de impacto (ajústalo según tu animación)
         yield return new WaitForSeconds(0.6f);
 
-        if (weaponCollider != null)
-            weaponCollider.enabled = false;
+        // Desactivar espada
+        if (bossSword != null)
+            bossSword.EndAttack();
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.6f); // Terminar animación
 
-        lastAttack = Time.time;
-
+        lastAttackTime = Time.time;
         isAttacking = false;
         isBusy = false;
-
-        agent.updatePosition = true;
     }
 
-    // ================= SUMMON =================
+    // ================= INVOCACIÓN =================
     IEnumerator Summon()
     {
         isSummoning = true;
         isBusy = true;
         hasSummoned = true;
+        StopMovement();
 
-        ForceStop();
+        if (anim != null) anim.SetTrigger("DoSummon");
+        Debug.Log("👹 SUMMON");
 
-        anim.SetTrigger("DoSummon");
-
-        if (summonClip != null)
+        if (summonClip != null && audioSource != null)
             audioSource.PlayOneShot(summonClip);
 
-        Debug.Log("👹 SUMMON INMEDIATO");
+        // Pequeña pausa para que se vea el gesto
+        yield return new WaitForSeconds(0.8f);
 
-        // 🔥 INVOCAR INMEDIATO
-        for (int i = 0; i < 4; i++)
+        // Invocar enemigos
+        if (summonPrefab != null)
         {
-            Instantiate(summonPrefab,
-                transform.position + Random.insideUnitSphere * 3f,
-                Quaternion.identity);
+            for (int i = 0; i < summonCount; i++)
+            {
+                Vector3 offset = Random.insideUnitSphere * summonRadius;
+                offset.y = 0;
+                Vector3 spawnPos = transform.position + offset;
+                Instantiate(summonPrefab, spawnPos, Quaternion.identity);
+                Debug.Log($"📦 Invocado enemigo {i + 1}");
+            }
         }
 
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(0.6f);
 
-        isBusy = false;
         isSummoning = false;
-
-        agent.updatePosition = true;
+        isBusy = false;
     }
 
-    // ================= VIDA =================
+    // ================= DAÑO Y MUERTE =================
     public void TakeDamage(float dmg)
     {
         if (state == State.Talk || state == State.Idle)
@@ -284,7 +325,7 @@ public class BossAI : MonoBehaviour
         }
 
         currentHealth -= dmg;
-        Debug.Log("💀 Boss recibió daño: " + dmg + " | Vida: " + currentHealth);
+        Debug.Log($"💀 Boss recibe {dmg} de daño. Vida: {currentHealth}");
 
         if (currentHealth <= 0)
             Die();
@@ -292,38 +333,48 @@ public class BossAI : MonoBehaviour
 
     void Die()
     {
+        if (state == State.Dead) return;
+
         state = State.Dead;
+        isBusy = true;
+        StopMovement();
 
-        ForceStop();
+        if (anim != null) anim.SetTrigger("DoDie");
 
-        anim.SetTrigger("DoDie");
-
-        if (deathClip != null)
+        if (deathClip != null && audioSource != null)
             audioSource.PlayOneShot(deathClip);
 
-        Debug.Log("💀 DEAD");
+        if (bossSword != null)
+            bossSword.EndAttack();
+
+        Debug.Log("💀 BOSS MUERTO");
     }
 
     void ResetBoss()
     {
+        StopAllCoroutines();
+
         state = State.Idle;
         isBusy = false;
         isAttacking = false;
         isSummoning = false;
         hasSummoned = false;
-
         currentHealth = maxHealth;
 
-        agent.Warp(startPos);
-        agent.updatePosition = true;
-        agent.isStopped = false;
+        transform.position = startPos;
+        StopMovement();
 
-        Debug.Log("🔄 RESET");
+        if (bossSword != null)
+            bossSword.EndAttack();
+
+        Debug.Log("🔄 BOSS RESETEADO");
     }
 
     void PlayRandom(AudioClip[] clips)
     {
         if (clips == null || clips.Length == 0) return;
-        audioSource.PlayOneShot(clips[Random.Range(0, clips.Length)]);
+        AudioClip clip = clips[Random.Range(0, clips.Length)];
+        if (clip != null && audioSource != null)
+            audioSource.PlayOneShot(clip);
     }
 }

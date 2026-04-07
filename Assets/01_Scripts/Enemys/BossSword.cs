@@ -4,27 +4,49 @@ using UnityEngine;
 public class BossSword : MonoBehaviour
 {
     public int damage = 20;
+    public Collider swordCollider;
 
+    private bool isAttacking = false;
     private HashSet<GameObject> hitPlayers = new HashSet<GameObject>();
+
+    void Start()
+    {
+        if (swordCollider == null)
+            swordCollider = GetComponent<Collider>();
+        if (swordCollider != null)
+            swordCollider.enabled = false;
+    }
 
     public void StartAttack()
     {
+        isAttacking = true;
         hitPlayers.Clear();
+        if (swordCollider != null)
+            swordCollider.enabled = true;
     }
 
-    void OnTriggerEnter(Collider other)
+    public void EndAttack()
     {
-        Debug.Log("COLISION CON: " + other.name);
+        isAttacking = false;
+        if (swordCollider != null)
+            swordCollider.enabled = false;
+    }
 
-        if (other.CompareTag("Player"))
-        {
-            PlayerMovement player = other.GetComponent<PlayerMovement>();
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!isAttacking) return;
+        if (hitPlayers.Contains(other.gameObject)) return;
 
-            if (player != null)
-            {
-                player.TakeDamage(damage);
-                Debug.Log("⚔️ DAÑO HECHO");
-            }
-        }
+        PlayerMovement player = other.GetComponentInParent<PlayerMovement>();
+        if (player == null) return;
+
+        player.TakeDamage(damage);
+        hitPlayers.Add(other.gameObject);
+        Debug.Log($"⚔️ Boss golpea con {damage}");
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        OnTriggerEnter(other);
     }
 }

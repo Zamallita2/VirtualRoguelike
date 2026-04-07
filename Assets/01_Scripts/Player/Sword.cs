@@ -5,7 +5,7 @@ public class Sword : MonoBehaviour
 {
     public int damage = 10;
 
-    private HashSet<GameObject> hitEnemies = new HashSet<GameObject>();
+    private HashSet<int> hitEnemies = new HashSet<int>();
 
     public void StartAttack()
     {
@@ -14,28 +14,49 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Enemy")) return;
+        TryHit(other);
+    }
 
-        if (hitEnemies.Contains(other.gameObject))
-            return;
+    private void OnTriggerStay(Collider other)
+    {
+        TryHit(other);
+    }
 
-        // 🔥 BOSS
-        BossAI boss = other.GetComponent<BossAI>();
-        if (boss != null)
+    private void TryHit(Collider other)
+    {
+        EnemyAI enemy = other.GetComponentInParent<EnemyAI>();
+        if (enemy != null)
         {
-            boss.TakeDamage(damage);
-            Debug.Log("⚔️ Golpeaste al BOSS");
-            hitEnemies.Add(other.gameObject);
+            int id = enemy.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
+
+            enemy.TakeDamage(damage);
+            hitEnemies.Add(id);
+            Debug.Log("⚔️ Golpeaste al enemigo");
             return;
         }
 
-        // 🔥 ENEMIGOS NORMALES
-        Dummy dummy = other.GetComponent<Dummy>();
+        BossAI boss = other.GetComponentInParent<BossAI>();
+        if (boss != null)
+        {
+            int id = boss.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
+
+            boss.TakeDamage(damage);
+            hitEnemies.Add(id);
+            Debug.Log("⚔️ Golpeaste al BOSS");
+            return;
+        }
+
+        Dummy dummy = other.GetComponentInParent<Dummy>();
         if (dummy != null)
         {
+            int id = dummy.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
+
             dummy.TakeDamage(damage);
+            hitEnemies.Add(id);
             Debug.Log("⚔️ Golpeaste enemigo");
-            hitEnemies.Add(other.gameObject);
         }
     }
 }
