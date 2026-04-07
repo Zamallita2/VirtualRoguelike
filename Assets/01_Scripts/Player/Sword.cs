@@ -15,7 +15,6 @@ public class Sword : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         TryHit(other);
-        Debug.Log("Le diste a algo");
     }
 
     private void TryHit(Collider other)
@@ -40,7 +39,7 @@ public class Sword : MonoBehaviour
 
             boss.TakeDamage(damage);
             hitEnemies.Add(id);
-            Debug.Log("⚔️ Golpeaste al BOSS");
+            Debug.Log("⚔️ Golpeaste a " + other.name.ToString() + " con " + damage.ToString());
             return;
         }
 
@@ -52,7 +51,7 @@ public class Sword : MonoBehaviour
 
             dummy.TakeDamage(damage);
             hitEnemies.Add(id);
-            Debug.Log("⚔️ Golpeaste enemigo");
+            Debug.Log("⚔️ Golpeaste a " + other.name.ToString() + " con " + damage.ToString());
         }
 
         if (other.CompareTag("Book"))
@@ -66,6 +65,7 @@ public class Sword : MonoBehaviour
             {
                 book.TakeDamage(damage);
                 hitEnemies.Add(id);
+                Debug.Log("⚔️ Golpeaste a " + other.name.ToString() + " con " + damage.ToString());
             }
         }
 
@@ -80,7 +80,9 @@ public class Sword : MonoBehaviour
             {
                 cande.TakeDamage(damage);
                 hitEnemies.Add(id);
+                Debug.Log("⚔️ Golpeaste a " + other.name.ToString() + " con " + damage.ToString());
             }
         }
+        else {Debug.Log("Le diste a nada");}
     }
 }

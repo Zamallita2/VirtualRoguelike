@@ -218,6 +218,10 @@ public class EnemyAI : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        var notifier = GetComponent<RoomEnemyNotifier>();
+        if (notifier != null)
+            notifier.NotifyDeath();
+        
         isBusy = true;
         currentState = EnemyState.Dead;
         StopMovement();

@@ -95,6 +95,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Libro
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
+      propertyPath: m_TagString
+      value: Book
+      objectReference: {fileID: 0}
     - target: {fileID: 2854563699051640978, guid: 4ca72746773179669aa29d576b230bdf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
