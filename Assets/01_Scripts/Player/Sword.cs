@@ -7,7 +7,6 @@ public class Sword : MonoBehaviour
 
     private HashSet<GameObject> hitEnemies = new HashSet<GameObject>();
 
-    // 🔥 Llamado desde el player al iniciar ataque
     public void StartAttack()
     {
         hitEnemies.Clear();
@@ -15,19 +14,28 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (!other.CompareTag("Enemy")) return;
+
+        if (hitEnemies.Contains(other.gameObject))
+            return;
+
+        // 🔥 BOSS
+        BossAI boss = other.GetComponent<BossAI>();
+        if (boss != null)
         {
-            // ❌ ya fue golpeado en este ataque
-            if (hitEnemies.Contains(other.gameObject))
-                return;
+            boss.TakeDamage(damage);
+            Debug.Log("⚔️ Golpeaste al BOSS");
+            hitEnemies.Add(other.gameObject);
+            return;
+        }
 
-            Dummy dummy = other.GetComponent<Dummy>();
-
-            if (dummy != null)
-            {
-                dummy.TakeDamage(damage);
-                hitEnemies.Add(other.gameObject); // 🐾 lo marcamos
-            }
+        // 🔥 ENEMIGOS NORMALES
+        Dummy dummy = other.GetComponent<Dummy>();
+        if (dummy != null)
+        {
+            dummy.TakeDamage(damage);
+            Debug.Log("⚔️ Golpeaste enemigo");
+            hitEnemies.Add(other.gameObject);
         }
     }
 }
