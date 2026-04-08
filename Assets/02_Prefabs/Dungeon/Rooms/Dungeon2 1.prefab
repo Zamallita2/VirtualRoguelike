@@ -2297,10 +2297,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dungeon2
       objectReference: {fileID: 0}
-    - target: {fileID: 8908301201263461182, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 147096640938832833, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
