@@ -40,16 +40,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.06
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.82
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
       propertyPath: m_LocalRotation.w
@@ -100,6 +112,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1840520649703530844}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 685810582291691989}
   m_SourcePrefab: {fileID: 100100000, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}
 --- !u!1 &5858103052505616918 stripped
 GameObject:
@@ -119,10 +134,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Candelabro
   health: 20
-  detectionRange: 2
-  attackRange: 1
+  detectionRange: 0.3
+  attackRange: 0.3
   rotationSpeed: 5
-  fireRate: 0.5
+  fireRate: 0.3
   bulletPrefab: {fileID: 1996226308163025481, guid: e494651d05c8c5f64a5aec1c3bc56ee9, type: 3}
   firePoint: {fileID: 3200714884340139389}
   bone: {fileID: 8795586073469458389}
@@ -154,6 +169,33 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0.010639548, y: 0, z: 0}
+--- !u!54 &685810582291691989
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858103052505616918}
+  serializedVersion: 5
+  m_Mass: 5
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!4 &6487427690470754476 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4518df6857286ec9f8b92389b0c1bf28, type: 3}

@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: ab74397fcc989d24abf2dc54172da3bc, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.17
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ab74397fcc989d24abf2dc54172da3bc, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.17
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ab74397fcc989d24abf2dc54172da3bc, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.17
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ab74397fcc989d24abf2dc54172da3bc, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.2352255
       objectReference: {fileID: 0}
@@ -102,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7691fcc454f2e48449908a52d8476e8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  speed: 1
+  speed: 0.5
   rotationSpeed: 10
   maxHealth: 100
   attackCooldown: 1
@@ -283,7 +295,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
