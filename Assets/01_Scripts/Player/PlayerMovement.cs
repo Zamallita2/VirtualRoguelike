@@ -148,6 +148,24 @@ public class PlayerMovement : MonoBehaviour
             Morir();
         }
     }
+    public float GetHealthNormalized()
+    {
+        return currentHealth / maxHealth;
+    }
+    public int GetDamage()
+    {
+        if (swordCollider == null) return 0;
+        return swordCollider.GetComponent<Sword>().damage;
+    }
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
 
     // 🔊 Métodos de sonido
     void PlayWalkSound()
