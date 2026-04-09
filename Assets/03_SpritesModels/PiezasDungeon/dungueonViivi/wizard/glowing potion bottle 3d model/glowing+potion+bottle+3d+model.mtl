@@ -1,0 +1,6 @@
+newmtl tripo_material_d1fe460d_1856_4ecc_a96e_a48759445bc1
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd glowing+potion+bottle+3d+model_basecolor.jpg
+
