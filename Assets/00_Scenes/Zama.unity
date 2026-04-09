@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DungeonManager
   startRoom: {fileID: 8240003250949104715, guid: 0be8847909241c9c1969f5066e0693c9, type: 3}
+  lastRoomPrefab: {fileID: 3358391577132625137, guid: 3cc77eef295c405d2a57cf83a0bdfccc, type: 3}
   bossRoomPrefab: {fileID: 9180763449132649285, guid: fa71b792a922441e1a5caedaaf98d266, type: 3}
   shopRoomPrefab: {fileID: 7595248793356794321, guid: 36977a9dca771957ab3fe3d1e4fcd373, type: 3}
   roomPrefabs:
@@ -156,8 +157,8 @@ MonoBehaviour:
   - {fileID: 966198365236691388, guid: 42d2c91e2f5331f598251a82ba4fb324, type: 3}
   - {fileID: 6789996490541634104, guid: 74489ba6a5a2d101ca84981999dde979, type: 3}
   wallPrefab: {fileID: 6875891272827011040, guid: 00af6a25723c58f74b7d0e56023c7bc2, type: 3}
-  maxRooms: 15
-  waveNum: 0
+  maxRooms: 5
+  waveNum: 5
   generatedRoot: {fileID: 1596694740}
 --- !u!4 &341042169
 Transform:

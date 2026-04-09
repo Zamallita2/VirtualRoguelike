@@ -218,6 +218,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        Destroy(gameObject,10);
         var notifier = GetComponent<RoomEnemyNotifier>();
         if (notifier != null)
             notifier.NotifyDeath();

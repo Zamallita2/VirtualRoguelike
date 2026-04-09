@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Book
   - Candelabro
+  - BossThrone
   layers:
   - Default
   - TransparentFX

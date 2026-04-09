@@ -56,6 +56,7 @@ public class BossAI : MonoBehaviour
     private float lastFuryTime;
 
     private Vector3 startPos;
+    public GameObject bossPrefab;
 
     void Start()
     {
@@ -334,8 +335,13 @@ public class BossAI : MonoBehaviour
     void Die()
     {
         if (state == State.Dead) return;
+        Destroy(gameObject,10);
 
         state = State.Dead;
+        var notifier = GetComponent<RoomEnemyNotifier>();
+        if (notifier != null)
+            notifier.NotifyDeath();
+        ReplaceBossThrone();
         isBusy = true;
         StopMovement();
 
@@ -376,5 +382,33 @@ public class BossAI : MonoBehaviour
         AudioClip clip = clips[Random.Range(0, clips.Length)];
         if (clip != null && audioSource != null)
             audioSource.PlayOneShot(clip);
+    }
+    public void ReplaceBossThrone()
+    {
+        GameObject throne = GameObject.FindGameObjectWithTag("BossThrone");
+
+        if (throne == null)
+        {
+            Debug.LogWarning("No se encontró el BossThrone unu");
+            return;
+        }
+
+        // Guardar transform original
+        Transform t = throne.transform;
+
+        Vector3 pos = t.position;
+        pos.y=-0.36f;
+
+        Quaternion rot = t.rotation;
+
+        // Instanciar nuevo objeto
+        GameObject newBoss = Instantiate(bossPrefab, pos, rot, throne.transform.parent);
+
+        // Ajustar escala (solo X y Z)
+        Vector3 scale = newBoss.transform.localScale;
+        newBoss.transform.localScale = scale;
+
+        // Destruir trono original
+        Destroy(throne);
     }
 }
