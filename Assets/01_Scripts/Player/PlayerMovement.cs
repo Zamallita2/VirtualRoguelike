@@ -2,10 +2,16 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    // ═══════════════════════════════════════════════
+    // MOVIMIENTO
+    // ═══════════════════════════════════════════════
     public float speed = 5f;
     private float currentSpeed;
     public float rotationSpeed = 10f;
 
+    // ═══════════════════════════════════════════════
+    // COMBATE
+    // ═══════════════════════════════════════════════
     [Header("Ataque")]
     public float maxHealth = 100f;
     public float currentHealth;
@@ -15,34 +21,63 @@ public class PlayerMovement : MonoBehaviour
     private float lastAttackTime = -Mathf.Infinity;
     private bool isAttacking = false;
 
+    // ═══════════════════════════════════════════════
+    // MONEDAS
+    // ═══════════════════════════════════════════════
+    [Header("Monedas")]
+    public int coins = 0;
+
+    // ═══════════════════════════════════════════════
+    // MEJORAS DE TIENDA
+    // ═══════════════════════════════════════════════
+    [Header("Regeneración (Especial)")]
+    public bool hasRegeneration = false;
+    public float regenAmountPerTick = 2f;
+    public float regenTickInterval = 3f;
+    private float regenTimer = 0f;
+
+    [Header("Segunda Oportunidad (Especial)")]
+    public bool hasSecondChance = false;
+    public bool secondChanceUsed = false;
+    public float secondChanceRevivePercent = 0.3f;
+
+    [Header("Cadencia de Ataque (Básica)")]
+    public float attackCooldownReduction = 0f;
+
+    // ═══════════════════════════════════════════════
+    // SONIDOS
+    // ═══════════════════════════════════════════════
     [Header("Sonidos")]
-    public AudioClip[] walkSounds; // múltiples pasos para variedad
-    public AudioClip attackVoiceSound; // "wooah"
-    public AudioClip swordSwingSound; // sonido de espada
-    public AudioClip takeDamageSound; // cuando recibe daño
-    public AudioClip deathSound; // cuando muere
-    public float walkSoundInterval = 0.5f; // cada cuánto suena el paso
+    public AudioClip[] walkSounds;
+    public AudioClip attackVoiceSound;
+    public AudioClip swordSwingSound;
+    public AudioClip takeDamageSound;
+    public AudioClip deathSound;
+    public float walkSoundInterval = 0.5f;
 
     private AudioSource audioSource;
     private float lastWalkSoundTime = 0f;
 
+    // ═══════════════════════════════════════════════
+    // COMPONENTES
+    // ═══════════════════════════════════════════════
     private Animator anim;
     private CapsuleCollider col;
     private Rigidbody rb;
     private bool isDead = false;
 
+    // ═══════════════════════════════════════════════
+    // INICIO
+    // ═══════════════════════════════════════════════
     void Start()
     {
         anim = GetComponent<Animator>();
         col = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
 
-        // 🔊 Configurar AudioSource
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
-        {
             audioSource = gameObject.AddComponent<AudioSource>();
-        }
 
         currentHealth = maxHealth;
         currentSpeed = speed;
@@ -51,6 +86,35 @@ public class PlayerMovement : MonoBehaviour
             swordCollider.enabled = false;
     }
 
+    // ═══════════════════════════════════════════════
+    // UPDATE
+    // ═══════════════════════════════════════════════
+    void Update()
+    {
+        if (isDead) return;
+
+        // Ataque
+        if (Input.GetKeyDown(KeyCode.Space) &&
+            Time.time >= lastAttackTime + GetCurrentCooldown())
+        {
+            StartCoroutine(Attack());
+        }
+
+        // Regeneración pasiva
+        if (hasRegeneration && currentHealth < maxHealth)
+        {
+            regenTimer += Time.deltaTime;
+            if (regenTimer >= regenTickInterval)
+            {
+                regenTimer = 0f;
+                Heal(regenAmountPerTick);
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════
+    // FIXED UPDATE
+    // ═══════════════════════════════════════════════
     void FixedUpdate()
     {
         if (isDead || isAttacking) return;
@@ -58,51 +122,43 @@ public class PlayerMovement : MonoBehaviour
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
         Vector3 move = new Vector3(h, 0, v).normalized;
-        Vector3 velocity = new Vector3(move.x * speed, rb.linearVelocity.y, move.z * speed);
+        Vector3 velocity = new Vector3(move.x * currentSpeed,
+                                       rb.linearVelocity.y,
+                                       move.z * currentSpeed);
         rb.linearVelocity = velocity;
 
         if (move != Vector3.zero)
         {
             Quaternion rot = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rot, rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation, rot, rotationSpeed * Time.deltaTime);
         }
 
         anim.SetFloat("Speed", move.magnitude);
 
-        // 🚶 Sonidos de caminar
-        if (move.magnitude > 0.1f && Time.time - lastWalkSoundTime >= walkSoundInterval)
+        if (move.magnitude > 0.1f &&
+            Time.time - lastWalkSoundTime >= walkSoundInterval)
         {
             PlayWalkSound();
             lastWalkSoundTime = Time.time;
         }
     }
 
-    void Update()
-    {
-        if (isDead) return;
-
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
-        {
-            StartCoroutine(Attack());
-        }
-    }
-
+    // ═══════════════════════════════════════════════
+    // COMBATE
+    // ═══════════════════════════════════════════════
     System.Collections.IEnumerator Attack()
     {
         isAttacking = true;
         lastAttackTime = Time.time;
         anim.SetTrigger("Attack");
 
-        // 🔊 Reproducir sonidos de ataque
         PlayAttackSounds();
 
         if (swordCollider != null)
         {
             Sword sword = swordCollider.GetComponent<Sword>();
-            if (sword != null)
-            {
-                sword.StartAttack();
-            }
+            if (sword != null) sword.StartAttack();
             swordCollider.enabled = true;
         }
 
@@ -116,17 +172,23 @@ public class PlayerMovement : MonoBehaviour
 
     void Morir()
     {
+        // ── Segunda Oportunidad ──
+        if (hasSecondChance && !secondChanceUsed)
+        {
+            secondChanceUsed = true;
+            currentHealth = maxHealth * secondChanceRevivePercent;
+            Debug.Log($"¡Segunda Oportunidad! Reviviendo con {currentHealth} HP");
+            return;
+        }
+
         isDead = true;
         anim.SetTrigger("Dead");
         anim.SetFloat("Speed", 0);
         rb.linearVelocity = Vector3.zero;
 
-        if (col != null)
-            col.enabled = false;
-
+        if (col != null) col.enabled = false;
         rb.isKinematic = true;
 
-        // 🔊 Sonido de muerte
         PlaySound(deathSound);
     }
 
@@ -135,15 +197,12 @@ public class PlayerMovement : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= damage;
-        Debug.Log("Player recibió daño: " + damage + " | Vida restante: " + currentHealth);
+        Debug.Log($"Daño recibido: {damage} | Vida: {currentHealth}");
 
-        // 🔊 Sonido de daño
         PlaySound(takeDamageSound);
 
         if (currentHealth <= 0)
-        {
             Morir();
-        }
     }
 
     public void ApplySlow(float duration)
@@ -155,61 +214,118 @@ public class PlayerMovement : MonoBehaviour
     System.Collections.IEnumerator SlowCoroutine(float duration)
     {
         currentSpeed = speed * 0.5f;
-
         yield return new WaitForSeconds(duration);
-
         currentSpeed = speed;
     }
-    public float GetHealthNormalized()
-    {
-        return currentHealth / maxHealth;
-    }
+
+    // ═══════════════════════════════════════════════
+    // GETTERS
+    // ═══════════════════════════════════════════════
+    public float GetHealthNormalized() => currentHealth / maxHealth;
+    public float GetCurrentHealth() => currentHealth;
+    public float GetMaxHealth() => maxHealth;
+    public float GetCurrentCooldown() => Mathf.Max(0.2f, attackCooldown - attackCooldownReduction);
+
     public int GetDamage()
     {
         if (swordCollider == null) return 0;
-        return swordCollider.GetComponent<Sword>().damage;
-    }
-    public float GetCurrentHealth()
-    {
-        return currentHealth;
+        Sword sword = swordCollider.GetComponent<Sword>();
+        return sword != null ? sword.damage : 0;
     }
 
-    public float GetMaxHealth()
+    // ═══════════════════════════════════════════════
+    // MÉTODOS DE TIENDA — BÁSICAS
+    // ═══════════════════════════════════════════════
+
+    /// <summary>Agrega monedas (llamar al matar enemigos)</summary>
+    public void AddCoins(int amount)
     {
-        return maxHealth;
+        coins += amount;
+        Debug.Log($"Monedas: +{amount} | Total: {coins}");
     }
 
-    // 🔊 Métodos de sonido
+    /// <summary>Cura sin superar la vida máxima</summary>
+    public void Heal(float amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        Debug.Log($"Curado: +{amount} HP | Vida: {currentHealth}/{maxHealth}");
+    }
+
+    /// <summary>Aumenta vida máxima y cura esa cantidad</summary>
+    public void IncreaseMaxHealth(float amount)
+    {
+        maxHealth += amount;
+        currentHealth += amount;
+        Debug.Log($"Vida máxima: +{amount} | Nueva: {maxHealth}");
+    }
+
+    /// <summary>Aumenta el daño de la espada</summary>
+    public void IncreaseDamage(float amount)
+    {
+        if (swordCollider == null) return;
+        Sword sword = swordCollider.GetComponent<Sword>();
+        if (sword != null)
+        {
+            sword.damage += (int)amount;
+            Debug.Log($"Daño: +{amount} | Daño actual: {sword.damage}");
+        }
+    }
+
+    /// <summary>Aumenta velocidad de movimiento permanentemente</summary>
+    public void IncreaseSpeed(float amount)
+    {
+        speed += amount;
+        currentSpeed += amount;
+        Debug.Log($"Velocidad: +{amount} | Actual: {speed}");
+    }
+
+    /// <summary>Reduce el cooldown entre ataques</summary>
+    public void IncreaseAttackSpeed(float reductionAmount)
+    {
+        attackCooldownReduction += reductionAmount;
+        Debug.Log($"Cadencia mejorada. Cooldown actual: {GetCurrentCooldown()}s");
+    }
+
+    // ═══════════════════════════════════════════════
+    // MÉTODOS DE TIENDA — ESPECIALES
+    // ═══════════════════════════════════════════════
+
+    /// <summary>Activa regeneración pasiva de vida</summary>
+    public void UnlockRegeneration()
+    {
+        hasRegeneration = true;
+        regenTimer = 0f;
+        Debug.Log("Regeneración activada");
+    }
+
+    /// <summary>Activa Segunda Oportunidad (revive 1 vez con 30% HP)</summary>
+    public void UnlockSecondChance()
+    {
+        hasSecondChance = true;
+        secondChanceUsed = false;
+        Debug.Log("Segunda Oportunidad activada");
+    }
+
+    // ═══════════════════════════════════════════════
+    // SONIDOS
+    // ═══════════════════════════════════════════════
     void PlayWalkSound()
     {
         if (walkSounds != null && walkSounds.Length > 0)
         {
-            // Elegir sonido aleatorio para variedad
             AudioClip clip = walkSounds[Random.Range(0, walkSounds.Length)];
-            audioSource.PlayOneShot(clip, 0.5f); // volumen 50%
+            audioSource.PlayOneShot(clip, 0.5f);
         }
     }
 
     void PlayAttackSounds()
     {
-        // Reproducir voz "wooah"
-        if (attackVoiceSound != null)
-        {
-            audioSource.PlayOneShot(attackVoiceSound, 0.8f);
-        }
-
-        // Reproducir sonido de espada (con pequeño delay)
-        if (swordSwingSound != null)
-        {
-            audioSource.PlayOneShot(swordSwingSound, 0.7f);
-        }
+        if (attackVoiceSound != null) audioSource.PlayOneShot(attackVoiceSound, 0.8f);
+        if (swordSwingSound != null) audioSource.PlayOneShot(swordSwingSound, 0.7f);
     }
 
     void PlaySound(AudioClip clip)
     {
-        if (clip != null)
-        {
-            audioSource.PlayOneShot(clip);
-        }
+        if (clip != null) audioSource.PlayOneShot(clip);
     }
 }
