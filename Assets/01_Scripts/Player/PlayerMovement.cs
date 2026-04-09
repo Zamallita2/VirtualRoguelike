@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
+    private float currentSpeed;
     public float rotationSpeed = 10f;
 
     [Header("Ataque")]
@@ -44,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         currentHealth = maxHealth;
+        currentSpeed = speed;
 
         if (swordCollider != null)
             swordCollider.enabled = false;
@@ -147,6 +149,21 @@ public class PlayerMovement : MonoBehaviour
         {
             Morir();
         }
+    }
+
+    public void ApplySlow(float duration)
+    {
+        StopAllCoroutines();
+        StartCoroutine(SlowCoroutine(duration));
+    }
+
+    System.Collections.IEnumerator SlowCoroutine(float duration)
+    {
+        currentSpeed = speed * 0.5f;
+
+        yield return new WaitForSeconds(duration);
+
+        currentSpeed = speed;
     }
     public float GetHealthNormalized()
     {
