@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
+    private float currentSpeed;
     public float rotationSpeed = 10f;
 
     [Header("Ataque")]
@@ -26,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
         col = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
         currentHealth = maxHealth;
+        currentSpeed = speed;
 
         // Asegurarse que la espada empieza desactivada
         if (swordCollider != null)
@@ -41,8 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 move = new Vector3(h, 0, v).normalized;
 
-        Vector3 velocity = new Vector3(move.x * speed, rb.linearVelocity.y, move.z * speed);
-        rb.linearVelocity = velocity;
+        Vector3 velocity = new Vector3(move.x * currentSpeed, rb.linearVelocity.y, move.z * currentSpeed); rb.linearVelocity = velocity;
 
         if (move != Vector3.zero)
         {
@@ -123,5 +124,20 @@ public class PlayerMovement : MonoBehaviour
         {
             Morir();
         }
+    }
+
+    public void ApplySlow(float duration)
+    {
+        StopAllCoroutines();
+        StartCoroutine(SlowCoroutine(duration));
+    }
+
+    System.Collections.IEnumerator SlowCoroutine(float duration)
+    {
+        currentSpeed = speed * 0.5f;
+
+        yield return new WaitForSeconds(duration);
+
+        currentSpeed = speed;
     }
 }
