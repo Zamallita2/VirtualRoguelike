@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Ataque")]
     public float maxHealth = 100f;
-    private float currentHealth;
+    public float currentHealth;
     public float attackCooldown = 1f;
     public float attackDuration = 0.5f;
     public Collider swordCollider;
@@ -82,11 +82,6 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
         {
             StartCoroutine(Attack());
-        }
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Morir();
         }
     }
 

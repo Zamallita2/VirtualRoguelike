@@ -95,9 +95,10 @@ MonoBehaviour:
   detectionRange: 0.7
   firstAttackRange: 0.25
   normalAttackRange: 0.25
-  moveSpeed: 1
+  moveSpeed: 0.5
   rotationSpeed: 1
   maxHealth: 50
+  currentHealth: 0
   anim: {fileID: 4634874195184286008}
   runBool: Run
   roarTrigger: Roar

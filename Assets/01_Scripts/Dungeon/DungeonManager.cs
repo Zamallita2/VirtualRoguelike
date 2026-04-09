@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class DungeonManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class PlayerStatsData
+    {
+        public float maxHealth;
+        public float currentHealth;
+        public float speed;
+        public int damage;
+    }
     public Room startRoom;
+    public Room lastRoomPrefab;
     public Room bossRoomPrefab;
     public Room shopRoomPrefab;
     public List<Room> roomPrefabs;
     public GameObject wallPrefab;
 
     public int maxRooms = 10;
-    public int waveNum=0;
+    public int waveNum=1;
 
     [Header("Generated content")]
     public Transform generatedRoot; // aquí cuelga todo lo generado
@@ -28,15 +37,83 @@ public class DungeonManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             Debug.Log("Regenerando dungeon... owo 🔄");
-            Regenerate();
-            waveNum++;
+            RegenerateRoom(true);
         }
+
         if (Input.GetKeyDown(KeyCode.L))
         {
             Debug.Log("Regenerando dungeon... owo 🔄");
-            Regenerate();
-            waveNum=0;
+            RegenerateRoom(false);
         }
+    }
+    public void RegenerateRoom(bool increaseWave)
+    {
+        Debug.Log("Regenerando dungeon... owo 🔄");
+
+        // 1. Obtener player actual
+        GameObject oldPlayerObj = GameObject.FindGameObjectWithTag("Player");
+
+        PlayerStatsData savedStats = null;
+
+        if (oldPlayerObj != null)
+        {
+            var oldPlayer = oldPlayerObj.GetComponent<PlayerMovement>();
+
+            if (oldPlayer != null)
+            {
+                savedStats = new PlayerStatsData();
+
+                savedStats.maxHealth = oldPlayer.maxHealth;
+                savedStats.currentHealth = oldPlayer.currentHealth;
+                savedStats.speed = oldPlayer.speed;
+
+                var sword = oldPlayer.swordCollider.GetComponent<Sword>();
+                if (sword != null)
+                    savedStats.damage = sword.damage;
+            }
+        }
+
+        // 2. Manejo wave
+        if (increaseWave)
+            waveNum++;
+        else
+            waveNum = 1;
+
+        // 3. Regenerar dungeon
+        Regenerate();
+
+        // 4. Buscar nuevo player (IMPORTANTE: esperar 1 frame)
+        if (savedStats != null)
+            StartCoroutine(ApplyStatsNextFrame(savedStats));
+    }
+    private IEnumerator ApplyStatsNextFrame(PlayerStatsData stats)
+    {
+        yield return null; // esperar 1 frame
+
+        GameObject newPlayerObj = GameObject.FindGameObjectWithTag("Player");
+
+        if (newPlayerObj == null || stats == null)
+        {
+            Debug.LogWarning("No hay player nuevo o no había stats guardados unu");
+            yield break;
+        }
+
+        var newPlayer = newPlayerObj.GetComponent<PlayerMovement>();
+
+        if (newPlayer == null)
+        {
+            Debug.LogWarning("El nuevo player no tiene script unu");
+            yield break;
+        }
+
+        // Aplicar stats
+        newPlayer.maxHealth = stats.maxHealth;
+        newPlayer.speed = stats.speed;
+        newPlayer.currentHealth = stats.currentHealth;
+
+        var sword = newPlayer.swordCollider.GetComponent<Sword>();
+        if (sword != null)
+            sword.damage = stats.damage;
     }
 
     public void Regenerate()
@@ -46,9 +123,22 @@ public class DungeonManager : MonoBehaviour
 
     IEnumerator RegenerateRoutine()
     {
-        ClearGenerated();
-        yield return null; // deja que Destroy haga efecto en el frame siguiente
-        Generate();
+        const int maxAttempts = 200;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            ClearGenerated();
+            yield return null;
+
+            bool ok = Generate();
+            if (ok)
+                yield break;
+
+            Debug.LogWarning($"Falló la generación, reintentando... ({attempt + 1}/{maxAttempts})");
+            yield return null;
+        }
+
+        Debug.LogError("No se pudo generar una dungeon válida.");
     }
 
     void ClearGenerated()
@@ -64,7 +154,7 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
-    void Generate()
+    bool Generate()
     {
         Room first = Instantiate(startRoom, Vector3.zero, Quaternion.identity, generatedRoot);
         spawnedRooms.Add(first);
@@ -110,12 +200,20 @@ public class DungeonManager : MonoBehaviour
             }
         }
 
-        AttachSpecialRoom(bossRoomPrefab, true);
-        AttachSpecialRoom(shopRoomPrefab, false);
+        bool isBossWave = waveNum > 0 && waveNum % 5 == 0;
+        Room special = isBossWave ? bossRoomPrefab : lastRoomPrefab;
+
+        if (!AttachSpecialRoom(special, isBossWave))
+            return false;
+
+        if (!AttachSpecialRoom(shopRoomPrefab, false))
+            return false;
+
         CloseOpenConnections();
+        return true;
     }
 
-    void AttachSpecialRoom(Room specialPrefab, bool isBoss)
+    bool AttachSpecialRoom(Room specialPrefab, bool isBoss)
     {
         List<ConnectionPoint> candidates = new List<ConnectionPoint>();
 
@@ -129,40 +227,58 @@ public class DungeonManager : MonoBehaviour
 
         if (candidates.Count == 0)
         {
-            Debug.Log("No hay conexiones válidas para special room 😿");
-            Regenerate();
-            return;
+            Debug.Log("❌ No hay conexiones válidas para special room");
+            return false;
         }
 
-        for (int i = 0; i < 10; i++)
+        // 🐱 Mezclar lista (Fisher-Yates shuffle)
+        for (int i = 0; i < candidates.Count; i++)
         {
-            ConnectionPoint current = candidates[Random.Range(0, candidates.Count)];
-
-            Room newRoom = Instantiate(specialPrefab, Vector3.zero, Quaternion.identity, generatedRoot);
-            ConnectionPoint target = newRoom.GetFreeConnection();
-
-            if (target == null)
-            {
-                Destroy(newRoom.gameObject);
-                continue;
-            }
-
-            AlignRooms(current, target, newRoom);
-
-            if (CheckOverlap(newRoom))
-            {
-                Destroy(newRoom.gameObject);
-                continue;
-            }
-
-            current.isOccupied = true;
-            target.isOccupied = true;
-
-            spawnedRooms.Add(newRoom);
-            openConnections.Remove(current);
-
-            return;
+            int rnd = Random.Range(i, candidates.Count);
+            var temp = candidates[i];
+            candidates[i] = candidates[rnd];
+            candidates[rnd] = temp;
         }
+
+        int attemptsPerConnection = isBoss ? 3 : 1;
+
+        foreach (var current in candidates)
+        {
+            for (int i = 0; i < attemptsPerConnection; i++)
+            {
+                Room newRoom = Instantiate(specialPrefab, Vector3.zero, Quaternion.identity, generatedRoot);
+                ConnectionPoint target = newRoom.GetFreeConnection();
+
+                if (target == null)
+                {
+                    Debug.Log("❌ Fallo: target null");
+                    Destroy(newRoom.gameObject);
+                    continue;
+                }
+
+                AlignRooms(current, target, newRoom);
+
+                if (CheckOverlap(newRoom))
+                {
+                    Debug.Log("❌ Fallo: overlap en conexión " + current.name);
+                    Destroy(newRoom.gameObject);
+                    continue;
+                }
+
+                Debug.Log("✅ Special room colocada en " + current.name);
+
+                current.isOccupied = true;
+                target.isOccupied = true;
+
+                spawnedRooms.Add(newRoom);
+                openConnections.Remove(current);
+
+                return true;
+            }
+        }
+
+        Debug.Log("❌ Fallo total: ninguna conexión funcionó");
+        return false;
     }
 
     void AlignRooms(ConnectionPoint a, ConnectionPoint b, Room room)

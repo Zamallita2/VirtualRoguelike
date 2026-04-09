@@ -65,7 +65,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.501, y: 0.85, z: 0.49996}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 723683924932956002}
@@ -92,7 +92,7 @@ MonoBehaviour:
   detectionRange: 15
   loseRange: 35
   attackRange: 2.5
-  moveSpeed: 3.5
+  moveSpeed: 0.5
   rotationSpeed: 8
   attackCooldown: 2
   furyCooldown: 15
@@ -115,6 +115,7 @@ MonoBehaviour:
   summonPrefab: {fileID: 0}
   summonCount: 4
   summonRadius: 3
+  bossPrefab: {fileID: 726363338070376994, guid: baa58aa8f93ff574282464400414f309, type: 3}
 --- !u!33 &8674253299201159154
 MeshFilter:
   m_ObjectHideFlags: 0
