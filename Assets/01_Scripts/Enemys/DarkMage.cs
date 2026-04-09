@@ -16,8 +16,14 @@ public class DarkMage : MonoBehaviour
     public float speed = 2f;
     public float castTime = 5f;
     public float timeBetweenShots = 1.5f;
+    public float variableRa=0.9f;
 
     private bool isCasting = false;
+    void Start()
+    {
+        GameObject plagerGO = GameObject.FindGameObjectWithTag("Player");
+        player=plagerGO.transform;
+    }
 
     void Update()
     {
@@ -154,7 +160,7 @@ public class DarkMage : MonoBehaviour
         // 🔥 disparar
         charge.transform.parent = null;
 
-        Vector3 targetPos = player.position + Vector3.up * 0.9f;
+        Vector3 targetPos = player.position + Vector3.up * variableRa;
         Vector3 dir = (targetPos - charge.transform.position).normalized;
 
         Fireball fb = charge.GetComponent<Fireball>();

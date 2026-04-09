@@ -116,7 +116,14 @@ public class Book : MonoBehaviour
         // 🔊 Sonido de disparo
         PlaySound(shootSound, 0.7f);
 
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        var bullet=Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        Fireball fb = bullet.GetComponent<Fireball>();
+        if (fb != null)
+        {
+            fb.SetDirection(gameObject.transform.forward);
+            fb.Activate(); // 🔥 IMPORTANTE
+        }
 
         if (!isAnimating && leftBone != null && rightBone != null)
             StartCoroutine(BoneAttackAnimation());

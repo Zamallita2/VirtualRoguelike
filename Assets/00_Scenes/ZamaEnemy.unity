@@ -393,6 +393,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4927888995645651256, guid: 99c01ce5c448263e89fd7f256fc01f7b, type: 3}
+      propertyPath: enemyPrefabs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4927888995645651256, guid: 99c01ce5c448263e89fd7f256fc01f7b, type: 3}
+      propertyPath: 'enemyPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1006146593862028361, guid: ba343ec7c705a29468dbed041a3a1f36, type: 3}
+    - target: {fileID: 4927888995645651256, guid: 99c01ce5c448263e89fd7f256fc01f7b, type: 3}
+      propertyPath: 'enemyPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1861417374731372711, guid: a0d52aab795749b72aefa4ff2435d514, type: 3}
+    - target: {fileID: 4927888995645651256, guid: 99c01ce5c448263e89fd7f256fc01f7b, type: 3}
+      propertyPath: 'enemyPrefabs.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1006146593862028361, guid: ba343ec7c705a29468dbed041a3a1f36, type: 3}
+    - target: {fileID: 8407677450716199193, guid: 99c01ce5c448263e89fd7f256fc01f7b, type: 3}
+      propertyPath: activationChance
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

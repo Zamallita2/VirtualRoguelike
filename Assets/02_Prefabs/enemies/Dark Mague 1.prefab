@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8786488544616468071}
   - component: {fileID: 8690010995443616912}
   - component: {fileID: 7730692897072881475}
+  - component: {fileID: 430103348362492152}
   m_Layer: 0
   m_Name: Dark Mague 1
   m_TagString: Enemy
@@ -30,8 +31,8 @@ Transform:
   m_GameObject: {fileID: 1006146593862028361}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -5.35, y: 1.34, z: 5.82}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8459156042619062580}
@@ -54,11 +55,12 @@ MonoBehaviour:
   anim: {fileID: 7730692897072881475}
   firePoint: {fileID: 3684141644716709995}
   fireballPrefab: {fileID: 890088447730500897, guid: 0421c925c4ea70600bb0083c603e11c1, type: 3}
-  detectRange: 7
-  minDistance: 4
-  speed: 2
+  detectRange: 0.7
+  minDistance: 0.3
+  speed: 0.5
   castTime: 5
   timeBetweenShots: 1.5
+  variableRa: 0.1
 --- !u!33 &510731523244942864
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -161,6 +163,33 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!54 &430103348362492152
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006146593862028361}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
 --- !u!1 &1049899308739893333
 GameObject:
   m_ObjectHideFlags: 0
