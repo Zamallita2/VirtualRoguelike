@@ -1,0 +1,6 @@
+newmtl tripo_material_de68a5cc_dc5e_4943_8dbd_5c6cb73d7431
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd spectral+chain+circle+3d+model_basecolor.jpg
+
