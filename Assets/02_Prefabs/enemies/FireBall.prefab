@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 23cbe4bccbe0985498b4643f87ba0f5c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 23cbe4bccbe0985498b4643f87ba0f5c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 23cbe4bccbe0985498b4643f87ba0f5c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 23cbe4bccbe0985498b4643f87ba0f5c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.461
       objectReference: {fileID: 0}
@@ -50,7 +62,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 23cbe4bccbe0985498b4643f87ba0f5c, type: 3}
       propertyPath: m_Name
-      value: Fireball
+      value: FireBall
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -83,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af9bb239d2e3f144986326bba1d0bf79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Fireball
-  speed: 10
+  speed: 2
   damage: 10
   slowDuration: 2
   lifeTime: 5

@@ -156,9 +156,14 @@ MonoBehaviour:
   - {fileID: 4927888995645651256, guid: 99c01ce5c448263e89fd7f256fc01f7b, type: 3}
   - {fileID: 966198365236691388, guid: 42d2c91e2f5331f598251a82ba4fb324, type: 3}
   - {fileID: 6789996490541634104, guid: 74489ba6a5a2d101ca84981999dde979, type: 3}
+  - {fileID: 2027058530361435181, guid: 204aa03322244a8479f7e0ac931715c2, type: 3}
+  - {fileID: 4259274789165850615, guid: 00e8720805ed5864ca81367fb8f847e5, type: 3}
+  - {fileID: 2132925531880964646, guid: a93baadaed794ab4581541f7321a3383, type: 3}
+  - {fileID: 8229988416500608756, guid: 8c1cafc59621f1b4abafd6efa94ea4e3, type: 3}
+  - {fileID: 3669729280537966544, guid: d6108f135b3ae84459b6b8a60168fe02, type: 3}
   wallPrefab: {fileID: 6875891272827011040, guid: 00af6a25723c58f74b7d0e56023c7bc2, type: 3}
-  maxRooms: 5
-  waveNum: 5
+  maxRooms: 17
+  waveNum: 4
   generatedRoot: {fileID: 1596694740}
 --- !u!4 &341042169
 Transform:

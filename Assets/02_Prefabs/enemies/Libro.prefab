@@ -179,7 +179,7 @@ MonoBehaviour:
   detectionRange: 0.7
   rotationSpeed: 5
   fireRate: 2
-  bulletPrefab: {fileID: 2812093026207817297, guid: 0421c925c4ea70600bb0083c603e11c1, type: 3}
+  bulletPrefab: {fileID: 890088447730500897, guid: 0421c925c4ea70600bb0083c603e11c1, type: 3}
   firePoint: {fileID: 7508231638764680555}
   leftBone: {fileID: 3641457596183154020}
   rightBone: {fileID: 1046248228818432425}

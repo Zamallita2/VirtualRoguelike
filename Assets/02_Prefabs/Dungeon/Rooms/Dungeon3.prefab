@@ -818,7 +818,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4506154815870848861, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
       propertyPath: enemyPrefabs.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4506154815870848861, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
       propertyPath: 'connections.Array.data[0]'
@@ -868,6 +868,10 @@ PrefabInstance:
       propertyPath: 'enemyPrefabs.Array.data[2]'
       value: 
       objectReference: {fileID: 5858103052505616918, guid: 6412b7547860a45d4b94f0ebe960ee3d, type: 3}
+    - target: {fileID: 4506154815870848861, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
+      propertyPath: 'enemyPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1006146593862028361, guid: ba343ec7c705a29468dbed041a3a1f36, type: 3}
     - target: {fileID: 4972821369852863597, guid: 36ed296c52612b09186a1e7967b373bd, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
