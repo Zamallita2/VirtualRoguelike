@@ -34,7 +34,6 @@ public class MenuBootstrap : MonoBehaviour
         if (uiSetup != null && manager != null)
         {
             manager.playButton = uiSetup.playButton;
-            manager.multiplayerButton = uiSetup.multiplayerButton;
             manager.optionsButton = uiSetup.optionsButton;
             manager.menuCanvasGroup = uiSetup.menuCanvasGroup;
             manager.castleTransform = castleModel != null ? castleModel.transform : null;

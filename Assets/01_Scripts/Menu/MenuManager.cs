@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement; // ← NUEVO
 
 public class MenuManager : MonoBehaviour
 {
@@ -22,23 +23,24 @@ public class MenuManager : MonoBehaviour
     [Header("Door Glow")]
     public DoorGlowParticles doorGlow;
 
-    [Header("Audio (Opcional - se busca automáticamente)")]
-    public AudioManager audioManager; // ✅ AHORA ES PÚBLICO para asignarlo en el Inspector
+    [Header("Escena del Dungeon")]
+    public string dungeonSceneName = "ViViAr"; // ← pon aquí el nombre exacto de tu escena
+
+    [Header("Audio")]
+    public AudioManager audioManager;
 
     void Start()
     {
-        // ✅ Buscar AudioManager si no está asignado
         if (audioManager == null)
             audioManager = FindFirstObjectByType<AudioManager>();
 
         if (audioManager == null)
-            Debug.LogError("[MenuManager] ❌ AudioManager no encontrado en Start()");
+            Debug.LogError("[MenuManager] ❌ AudioManager no encontrado");
         else
-            Debug.Log("[MenuManager] ✅ AudioManager encontrado en Start()");
+            Debug.Log("[MenuManager] ✅ AudioManager encontrado");
 
         if (arCamera == null) arCamera = Camera.main;
 
-        // Ajustar escala del castillo si es demasiado pequeño
         if (castleTransform != null)
         {
             if (castleTransform.localScale.magnitude < 1f)
@@ -74,13 +76,9 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator ShowMenuSequence()
     {
-        // ✅ BUSCAR AudioManager JUSTO ANTES DE USARLO (por si Start() no se ejecutó aún)
         if (audioManager == null)
         {
-            Debug.Log("[MenuManager] 🔍 Buscando AudioManager en ShowMenuSequence...");
             audioManager = FindFirstObjectByType<AudioManager>();
-
-            // Segundo intento esperando un frame
             if (audioManager == null)
             {
                 yield return null;
@@ -90,29 +88,21 @@ public class MenuManager : MonoBehaviour
 
         if (audioManager != null)
         {
-            Debug.Log("[MenuManager] 🎵 Llamando a PlayAmbientMusic()...");
             audioManager.PlayAmbientMusic();
-
-            // ✅ VERIFICAR si realmente está sonando
             yield return new WaitForSeconds(0.1f);
 
             AudioSource[] sources = audioManager.GetComponents<AudioSource>();
             foreach (var src in sources)
             {
                 if (src.isPlaying)
-                {
-                    Debug.Log($"[MenuManager] ✅ AudioSource está reproduciendo: {src.clip?.name ?? "null"} - Volume: {src.volume}");
-                }
+                    Debug.Log($"[MenuManager] ✅ Reproduciendo: {src.clip?.name}");
                 else
-                {
-                    Debug.LogWarning($"[MenuManager] ⚠️ AudioSource NO está reproduciendo. Clip: {src.clip?.name ?? "null"}");
-                }
+                    Debug.LogWarning($"[MenuManager] ⚠️ No reproduce: {src.clip?.name}");
             }
         }
         else
         {
-            Debug.LogError("[MenuManager] ❌❌❌ NO SE ENCONTRÓ AudioManager - LA MÚSICA NO PUEDE SONAR");
-            Debug.LogError("[MenuManager] Asegúrate de que existe un GameObject con el script AudioManager en la escena");
+            Debug.LogError("[MenuManager] ❌ AudioManager no encontrado");
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -146,20 +136,29 @@ public class MenuManager : MonoBehaviour
 
     IEnumerator PlaySequence()
     {
+        // 1. Fade out del menú
         yield return StartCoroutine(FadeMenu(1f, 0f, 0.6f));
 
+        // 2. Zoom a la puerta
         if (doorTransform != null && arCamera != null)
             yield return StartCoroutine(ZoomToDoor());
         else
             yield return new WaitForSeconds(0.5f);
 
+        // 3. Efecto de puerta
         if (doorGlow != null)
             doorGlow.ActivateDoorGlow();
 
         if (audioManager != null)
             audioManager.PlayDoorOpenSound();
 
-        Debug.Log("[MenuManager] Secuencia Play completada");
+        // 4. ✅ Mostrar castillo 5 segundos
+        Debug.Log("[MenuManager] Mostrando castillo 5 segundos...");
+        yield return new WaitForSeconds(5f);
+
+        // 5. ✅ Cargar escena del dungeon
+        Debug.Log($"[MenuManager] Cargando escena: {dungeonSceneName}");
+        SceneManager.LoadScene(dungeonSceneName);
     }
 
     IEnumerator FadeMenu(float from, float to, float duration)

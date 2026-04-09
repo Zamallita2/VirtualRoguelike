@@ -1,17 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class MenuUISetup : MonoBehaviour
 {
-    [SerializeField] private float menuScale = 0.0008f;   // más pequeño aún
+    [SerializeField] private float menuScale = 0.0008f;
     [SerializeField] private float menuDistance = 0.5f;
     [SerializeField] private float menuHeight = 0f;
 
     [HideInInspector] public Canvas mainCanvas;
     [HideInInspector] public CanvasGroup menuCanvasGroup;
     [HideInInspector] public Button playButton;
-    [HideInInspector] public Button multiplayerButton;
     [HideInInspector] public Button optionsButton;
     [HideInInspector] public TextMeshProUGUI titleText;
 
@@ -37,8 +39,11 @@ public class MenuUISetup : MonoBehaviour
         Camera cam = Camera.main;
         if (cam != null)
         {
-            canvasRect.position = cam.transform.position + cam.transform.forward * menuDistance + Vector3.up * menuHeight;
-            canvasRect.rotation = Quaternion.LookRotation(canvasRect.position - cam.transform.position);
+            canvasRect.position = cam.transform.position
+                + cam.transform.forward * menuDistance
+                + Vector3.up * menuHeight;
+            canvasRect.rotation = Quaternion.LookRotation(
+                canvasRect.position - cam.transform.position);
         }
         else
         {
@@ -46,9 +51,9 @@ public class MenuUISetup : MonoBehaviour
         }
 
         menuCanvasGroup = canvasGO.AddComponent<CanvasGroup>();
-        menuCanvasGroup.alpha = 0f;
-        menuCanvasGroup.interactable = false;
-        menuCanvasGroup.blocksRaycasts = false;
+        menuCanvasGroup.alpha = 1f;
+        menuCanvasGroup.interactable = true;
+        menuCanvasGroup.blocksRaycasts = true;
 
         // Fondo oscuro
         GameObject panel = new GameObject("Background");
@@ -93,15 +98,22 @@ public class MenuUISetup : MonoBehaviour
         titleRect.anchorMin = new Vector2(0, 0.75f);
         titleRect.anchorMax = new Vector2(1, 0.95f);
         titleRect.sizeDelta = Vector2.zero;
-        titleGO.AddComponent<TitleGlowEffect>();
 
         // Botones
-        playButton = CreateButton(canvasGO.transform, "PlayButton", "JUGAR", new Vector2(0.5f, 0.55f), new Vector2(300, 70));
-        multiplayerButton = CreateButton(canvasGO.transform, "MultiplayerButton", "MULTIJUGADOR", new Vector2(0.5f, 0.38f), new Vector2(300, 70));
-        optionsButton = CreateButton(canvasGO.transform, "OptionsButton", "OPCIONES", new Vector2(0.5f, 0.21f), new Vector2(300, 70));
+        playButton = CreateButton(canvasGO.transform, "PlayButton", "JUGAR",
+            new Vector2(0.5f, 0.55f), new Vector2(300, 70));
+        optionsButton = CreateButton(canvasGO.transform, "OptionsButton", "OPCIONES",
+            new Vector2(0.5f, 0.21f), new Vector2(300, 70));
+
+        // ✅ CAMBIO CLAVE: carga la escena ViViAr
+        playButton.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene("ViViAr");
+        });
     }
 
-    Button CreateButton(Transform parent, string name, string text, Vector2 anchorPosition, Vector2 size)
+    Button CreateButton(Transform parent, string name, string text,
+        Vector2 anchorPosition, Vector2 size)
     {
         GameObject btnGO = new GameObject(name);
         btnGO.transform.SetParent(parent, false);
@@ -135,7 +147,6 @@ public class MenuUISetup : MonoBehaviour
         textRect.anchorMax = Vector2.one;
         textRect.sizeDelta = Vector2.zero;
 
-        btnGO.AddComponent<ButtonHoverEffect>();
         return button;
     }
 
@@ -145,7 +156,10 @@ public class MenuUISetup : MonoBehaviour
         Camera cam = Camera.main;
         if (cam == null) return;
         RectTransform canvasRect = mainCanvas.GetComponent<RectTransform>();
-        canvasRect.position = cam.transform.position + cam.transform.forward * menuDistance + Vector3.up * menuHeight;
-        canvasRect.rotation = Quaternion.LookRotation(canvasRect.position - cam.transform.position);
+        canvasRect.position = cam.transform.position
+            + cam.transform.forward * menuDistance
+            + Vector3.up * menuHeight;
+        canvasRect.rotation = Quaternion.LookRotation(
+            canvasRect.position - cam.transform.position);
     }
 }

@@ -1,48 +1,48 @@
 ﻿using UnityEngine;
 
-/// <summary>
-/// Colocar en el objeto de la mesa de tienda.
-/// Requiere un Collider con Is Trigger activado.
-/// </summary>
 public class ShopTrigger : MonoBehaviour
 {
     [Header("Referencias")]
     public GameObject shopUICanvas;
     public string playerTag = "Player";
-
     private ShopUI shopUI;
 
     private void Start()
     {
-        shopUI = FindObjectOfType<ShopUI>();
+        shopUI = FindFirstObjectByType<ShopUI>();
 
         if (shopUI != null)
         {
             shopUICanvas = shopUI.gameObject;
-            shopUICanvas.SetActive(false);
+            shopUICanvas.SetActive(false); // ✅ siempre oculto al inicio
         }
         else
         {
-            Debug.LogError("ShopTrigger: No se encontró ningún ShopUI en la escena.");
+            // ✅ si no hay ShopUI, ocultar el canvas directamente
+            if (shopUICanvas != null)
+                shopUICanvas.SetActive(false);
+
+            Debug.LogWarning("ShopTrigger: No se encontró ShopUI.");
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag(playerTag)) return;
-
         PlayerMovement player = other.GetComponent<PlayerMovement>();
         if (player == null) return;
-
         if (shopUI != null) shopUI.SetPlayer(player);
-        shopUICanvas.SetActive(true);
+        if (shopUICanvas != null) shopUICanvas.SetActive(true);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag(playerTag)) return;
-        shopUICanvas.SetActive(false);
+        if (shopUICanvas != null) shopUICanvas.SetActive(false);
     }
 
-    public void CloseShop() => shopUICanvas.SetActive(false);
+    public void CloseShop()
+    {
+        if (shopUICanvas != null) shopUICanvas.SetActive(false);
+    }
 }
