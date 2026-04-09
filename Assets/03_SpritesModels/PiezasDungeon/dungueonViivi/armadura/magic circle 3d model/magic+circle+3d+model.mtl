@@ -1,0 +1,6 @@
+newmtl tripo_material_a5d9ac41_833d_49d6_910a_2b70a22f7514
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd magic+circle+3d+model_basecolor.jpg
+

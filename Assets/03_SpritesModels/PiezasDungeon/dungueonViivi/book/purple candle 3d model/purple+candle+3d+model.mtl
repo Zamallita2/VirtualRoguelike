@@ -1,0 +1,6 @@
+newmtl tripo_material_f2c0db0b_555e_40f5_8a4a_f655d397c735
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd purple+candle+3d+model_basecolor.jpg
+
