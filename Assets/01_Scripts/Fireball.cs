@@ -44,7 +44,5 @@ public class Fireball : MonoBehaviour
                 player.ApplySlow(slowDuration);
             }
         }
-
-        Destroy(gameObject);
     }
 }
