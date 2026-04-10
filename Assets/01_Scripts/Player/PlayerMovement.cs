@@ -60,6 +60,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private bool isDead = false;
     private float deathTimer=0;
+    public FixedJoystick joystick;
 
     // ═══════════════════════════════════════════════
     // INICIO
@@ -78,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
         if (swordCollider != null)
             swordCollider.enabled = false;
 
-        if (useJoystick && joystick == null)
+        if (joystick == null)
         {
             joystick = FindObjectOfType<FixedJoystick>();
         }
@@ -100,12 +101,11 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Ataque
-        if (!useJoystick && Input.GetKeyDown(KeyCode.Space) &&
-    Time.time >= lastAttackTime + GetCurrentCooldown())
+        /*// Ataque
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + GetCurrentCooldown())
         {
             StartCoroutine(Attack());
-        }
+        }*/
 
         // Regeneración pasiva
         if (hasRegeneration && currentHealth < maxHealth)
@@ -126,19 +126,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDead || isAttacking) return;
 
-        float h;
-        float v;
-
-        if (useJoystick && joystick != null)
-        {
-            h = joystick.Horizontal;
-            v = joystick.Vertical;
-        }
-        else
-        {
-            h = Input.GetAxis("Horizontal");
-            v = Input.GetAxis("Vertical");
-        }
+        float h = joystick.Horizontal;
+        float v = joystick.Vertical;
 
         Vector3 move = new Vector3(h, 0, v).normalized;
         Vector3 velocity = new Vector3(move.x * currentSpeed,
