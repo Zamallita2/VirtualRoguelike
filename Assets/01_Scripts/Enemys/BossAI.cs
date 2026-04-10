@@ -339,6 +339,13 @@ public class BossAI : MonoBehaviour
         isBusy = true;
         StopMovement();
 
+        // 🔥 DROPEAR LOOT
+        EnemyLootDrop loot = GetComponent<EnemyLootDrop>();
+        if (loot != null)
+        {
+            loot.DropLoot();
+        }
+
         if (anim != null) anim.SetTrigger("DoDie");
 
         if (deathClip != null && audioSource != null)

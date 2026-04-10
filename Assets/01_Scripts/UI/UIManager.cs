@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
 
     [Header("UI - Vida")]
     public Image healthFill;
-    public TextMeshProUGUI healthText; // 👈 TEXTO VIDA
+    public TextMeshProUGUI healthText;
 
     [Header("UI - Stats")]
     public TextMeshProUGUI damageText;
@@ -17,7 +17,6 @@ public class UIManager : MonoBehaviour
 
     [Header("UI - Monedas")]
     public TextMeshProUGUI coinsText;
-    public int coins = 0;
 
     void Start()
     {
@@ -40,16 +39,12 @@ public class UIManager : MonoBehaviour
     {
         if (healthFill != null)
         {
-            float value = player.GetHealthNormalized();
-            healthFill.fillAmount = value;
+            healthFill.fillAmount = player.GetHealthNormalized();
         }
 
         if (healthText != null)
         {
-            float current = player.GetCurrentHealth();
-            float max = player.GetMaxHealth();
-
-            healthText.text = current.ToString("F0") + " / " + max.ToString("F0");
+            healthText.text = player.GetCurrentHealth().ToString("F0") + " / " + player.GetMaxHealth().ToString("F0");
         }
     }
 
@@ -57,8 +52,7 @@ public class UIManager : MonoBehaviour
     {
         if (damageText != null)
         {
-            int damage = GetPlayerDamage();
-            damageText.text = damage.ToString();
+            damageText.text = player.GetDamage().ToString();
         }
 
         if (speedText != null)
@@ -71,22 +65,7 @@ public class UIManager : MonoBehaviour
     {
         if (coinsText != null)
         {
-            coinsText.text =  coins.ToString();
+            coinsText.text = player.GetCoins().ToString();
         }
-    }
-
-    int GetPlayerDamage()
-    {
-        if (player.swordCollider == null) return 0;
-
-        Sword sword = player.swordCollider.GetComponent<Sword>();
-        if (sword == null) return 0;
-
-        return sword.damage;
-    }
-
-    public void AddCoins(int amount)
-    {
-        coins += amount;
     }
 }

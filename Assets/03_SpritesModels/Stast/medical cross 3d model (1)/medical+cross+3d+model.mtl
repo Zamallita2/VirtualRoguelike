@@ -1,0 +1,6 @@
+newmtl tripo_material_c443812b_f3b7_441d_8911_f6c0a22677d1
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd medical+cross+3d+model_basecolor.jpg
+

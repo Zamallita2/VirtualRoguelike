@@ -2,15 +2,19 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Movimiento")]
     public float speed = 5f;
     public float rotationSpeed = 10f;
 
-    [Header("Ataque")]
+    [Header("Ataque / Vida")]
     public float maxHealth = 100f;
-    private float currentHealth;
-    public float attackCooldown = 1f; // tiempo entre ataques
-    public float attackDuration = 0.5f; // cuánto dura el ataque (para collider)
-    public Collider swordCollider; // collider de la espada
+    [SerializeField] private float currentHealth;
+    public float attackCooldown = 1f;
+    public float attackDuration = 0.5f;
+    public Collider swordCollider;
+
+    [Header("Monedas")]
+    [SerializeField] private int coins = 0;
 
     private float lastAttackTime = -Mathf.Infinity;
     private bool isAttacking = false;
@@ -25,16 +29,16 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
         col = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
+
         currentHealth = maxHealth;
 
-        // Asegurarse que la espada empieza desactivada
         if (swordCollider != null)
             swordCollider.enabled = false;
     }
 
     void FixedUpdate()
     {
-        if (isDead || isAttacking) return; // 🚫 no se mueve mientras ataca
+        if (isDead || isAttacking) return;
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
@@ -57,7 +61,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDead) return;
 
-        // 🗡️ Ataque con cooldown
         if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastAttackTime + attackCooldown)
         {
             StartCoroutine(Attack());
@@ -78,15 +81,14 @@ public class PlayerMovement : MonoBehaviour
 
         if (swordCollider != null)
         {
-            // 🔥 Obtener script de la espada
             Sword sword = swordCollider.GetComponent<Sword>();
 
             if (sword != null)
             {
-                sword.StartAttack(); // resetear enemigos golpeados
+                sword.StartAttack();
             }
 
-            swordCollider.enabled = true; // activar collider
+            swordCollider.enabled = true;
         }
 
         yield return new WaitForSeconds(attackDuration);
@@ -111,6 +113,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb.isKinematic = true;
     }
+
     public void TakeDamage(float damage)
     {
         if (isDead) return;
@@ -121,18 +124,17 @@ public class PlayerMovement : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            currentHealth = 0;
             Morir();
         }
     }
+
     public float GetHealthNormalized()
     {
+        if (maxHealth <= 0) return 0;
         return currentHealth / maxHealth;
     }
-    public int GetDamage()
-    {
-        if (swordCollider == null) return 0;
-        return swordCollider.GetComponent<Sword>().damage;
-    }
+
     public float GetCurrentHealth()
     {
         return currentHealth;
@@ -141,5 +143,58 @@ public class PlayerMovement : MonoBehaviour
     public float GetMaxHealth()
     {
         return maxHealth;
+    }
+
+    public int GetDamage()
+    {
+        if (swordCollider == null) return 0;
+
+        Sword sword = swordCollider.GetComponent<Sword>();
+        if (sword == null) return 0;
+
+        return sword.GetDamage();
+    }
+
+    public int GetCoins()
+    {
+        return coins;
+    }
+
+    public void AddCoins(int amount)
+    {
+        coins += amount;
+        if (coins < 0) coins = 0;
+    }
+
+    public void AddSpeed(float amount)
+    {
+        speed += amount;
+        if (speed < 0) speed = 0;
+    }
+
+    public void AddDamage(int amount)
+    {
+        if (swordCollider == null) return;
+
+        Sword sword = swordCollider.GetComponent<Sword>();
+        if (sword == null) return;
+
+        sword.AddDamage(amount);
+    }
+
+    public void IncreaseMaxHealth(float amount)
+    {
+        maxHealth += amount;
+        if (maxHealth < 1) maxHealth = 1;
+    }
+
+    public void Heal(float amount)
+    {
+        currentHealth += amount;
+        if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
+
+        if (currentHealth < 0)
+            currentHealth = 0;
     }
 }
