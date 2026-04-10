@@ -11,10 +11,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/00_Scenes/Vivi.unity
     guid: 9d2560d83106e005da0e36fa4f462b54
-  - enabled: 0
+  - enabled: 1
     path: Assets/00_Scenes/ViviAr.unity
     guid: 64305da3281ff324ba79d39957077beb
-  - enabled: 1
+  - enabled: 0
     path: Assets/00_Scenes/CarlaPlayerAR.unity
     guid: d6f5575b86073874980b61dee6ad4c91
   m_configObjects:
