@@ -75,6 +75,7 @@ Assets/01_Scripts/
   Dummy.cs
   EnemyLootDrop.cs
  Fireball.cs
+ FollowPlayer.cs
  Menu/
   AudioManager.cs
   ButtonHoverEffect.cs

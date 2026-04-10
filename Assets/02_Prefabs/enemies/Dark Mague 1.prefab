@@ -58,7 +58,7 @@ MonoBehaviour:
   fireballPrefab: {fileID: 890088447730500897, guid: 0421c925c4ea70600bb0083c603e11c1, type: 3}
   detectRange: 0.7
   minDistance: 0.3
-  speed: 0.5
+  speed: 0.1
   castTime: 5
   timeBetweenShots: 1.5
   variableRa: 0.1

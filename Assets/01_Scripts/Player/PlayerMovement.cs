@@ -15,7 +15,6 @@ public class PlayerMovement : MonoBehaviour
     public Collider swordCollider;
     private float lastAttackTime = -Mathf.Infinity;
     private bool isAttacking = false;
-
     // ═══════════════════════════════════════════════
     // MONEDAS
     // ═══════════════════════════════════════════════
@@ -60,6 +59,7 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider col;
     private Rigidbody rb;
     private bool isDead = false;
+    private float deathTimer=0;
 
     // ═══════════════════════════════════════════════
     // INICIO
@@ -84,7 +84,16 @@ public class PlayerMovement : MonoBehaviour
     // ═══════════════════════════════════════════════
     void Update()
     {
-        if (isDead) return;
+        if (isDead)
+        {
+            deathTimer+=Time.deltaTime;
+            if (deathTimer >= 5)
+            {
+                FindFirstObjectByType<DungeonManager>()
+                .RegenerateRoom(false);
+            }
+            return;
+        }
 
         // Ataque
         if (Input.GetKeyDown(KeyCode.Space) &&
