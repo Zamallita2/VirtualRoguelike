@@ -116,10 +116,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 0.5
   rotationSpeed: 10
+  joystick: {fileID: 0}
+  useJoystick: 0
   maxHealth: 100
+  currentHealth: 0
   attackCooldown: 1
   attackDuration: 0.5
   swordCollider: {fileID: 8141217006097031706}
+  coins: 0
+  hasRegeneration: 0
+  regenAmountPerTick: 2
+  regenTickInterval: 3
+  hasSecondChance: 0
+  secondChanceUsed: 0
+  secondChanceRevivePercent: 0.3
+  attackCooldownReduction: 0
   walkSounds:
   - {fileID: 8300000, guid: 1edcad2699694a84db13164611a8909f, type: 3}
   attackVoiceSound: {fileID: 8300000, guid: c1e8f8d21f3436a4b8af9002c1bb770e, type: 3}
