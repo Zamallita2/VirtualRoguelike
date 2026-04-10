@@ -5,11 +5,11 @@ public class ShopTrigger : MonoBehaviour
     [Header("Referencias")]
     public GameObject shopUICanvas;
     public string playerTag = "Player";
-    private ShopUI shopUI;
+    public ShopUI shopUI;
 
     private void Start()
     {
-        shopUI = FindFirstObjectByType<ShopUI>();
+        shopUI = FindFirstObjectByType<ShopUI>(FindObjectsInactive.Include);
 
         if (shopUI != null)
         {

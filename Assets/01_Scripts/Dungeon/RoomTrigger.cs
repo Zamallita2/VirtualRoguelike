@@ -70,7 +70,7 @@ public class RoomTrigger : MonoBehaviour
 
             if (point == null || prefab == null) continue;
 
-            GameObject enemy = Instantiate(prefab, point.position, point.rotation);
+            GameObject enemy = Instantiate(prefab, point.position, point.rotation, point);
 
             room.RegisterEnemy(enemy);
 

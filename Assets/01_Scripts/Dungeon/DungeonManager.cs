@@ -48,7 +48,6 @@ public class DungeonManager : MonoBehaviour
     {
         GameObject oldPlayerObj = GameObject.FindGameObjectWithTag("Player");
         PlayerStatsData savedStats = null;
-
         if (oldPlayerObj != null)
         {
             var oldPlayer = oldPlayerObj.GetComponent<PlayerMovement>();

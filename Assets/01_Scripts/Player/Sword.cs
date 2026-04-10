@@ -53,6 +53,17 @@ public class Sword : MonoBehaviour
             Debug.Log("⚔️ Golpeaste a " + other.name.ToString() + " con " + damage.ToString());
             return;
         }
+        DarkMage mage = other.GetComponentInParent<DarkMage>();
+        if (mage != null)
+        {
+            int id = mage.gameObject.GetInstanceID();
+            if (hitEnemies.Contains(id)) return;
+
+            mage.TakeDamage(damage);
+            hitEnemies.Add(id);
+            Debug.Log("⚔️ Golpeaste a " + other.name.ToString() + " con " + damage.ToString());
+            return;
+        }
 
         Dummy dummy = other.GetComponentInParent<Dummy>();
         if (dummy != null)
