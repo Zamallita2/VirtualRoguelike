@@ -17,6 +17,9 @@ public class DarkMage : MonoBehaviour
     public float castTime = 5f;
     public float timeBetweenShots = 1.5f;
     public float variableRa=0.9f;
+    [Header("Health")]
+    public float maxHealth = 50f;
+    public float currentHealth;
 
     private bool isCasting = false;
     void Start()
@@ -186,5 +189,28 @@ public class DarkMage : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, minDistance);
+    }
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        Debug.Log($"{name} recibe {damage} de daño. Vida: {currentHealth}");
+        if (currentHealth <= 0f) 
+            Die();
+    }
+    private void Die()
+    {
+        var notifier = GetComponent<RoomEnemyNotifier>();
+        if (notifier != null)
+            notifier.NotifyDeath();
+
+        // 🔥 DROPEAR LOOT
+        EnemyLootDrop loot = GetComponent<EnemyLootDrop>();
+        if (loot != null)
+        {
+            loot.DropLoot();
+        }
+
+        
+        Destroy(gameObject);
     }
 }

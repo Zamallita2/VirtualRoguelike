@@ -44,12 +44,12 @@ public class PowerUpPickup : MonoBehaviour
                 break;
 
             case PowerUpType.Speed:
-                player.AddSpeed(1f);
+                player.AddSpeed(0.1f);
                 Debug.Log("PowerUp: +1 velocidad");
                 break;
 
             case PowerUpType.Coins:
-                player.AddCoins(5);
+                player.AddCoins(10);
                 Debug.Log("PowerUp: +5 coins");
                 break;
 
@@ -59,7 +59,7 @@ public class PowerUpPickup : MonoBehaviour
                 break;
 
             case PowerUpType.Heal:
-                player.Heal(50f);
+                player.Heal(150f);
                 Debug.Log("PowerUp: +50 vida");
                 break;
         }
