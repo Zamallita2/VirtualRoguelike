@@ -9,14 +9,10 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Ataque / Vida")]
     public float maxHealth = 100f;
-    [SerializeField] private float currentHealth;
+    [SerializeField] public float currentHealth;
     public float attackCooldown = 1f;
     public float attackDuration = 0.5f;
     public Collider swordCollider;
-
-    [Header("Monedas")]
-    [SerializeField] private int coins = 0;
-
     private float lastAttackTime = -Mathf.Infinity;
     private bool isAttacking = false;
 
@@ -208,12 +204,11 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(SlowCoroutine(duration));
     }
     
-    public int GetDamage()
+    /*public int GetDamage()
     {
         if (swordCollider == null) return 0;
         return swordCollider.GetComponent<Sword>().damage;
-    }
-    public float GetCurrentHealth()
+    }*/
 
     System.Collections.IEnumerator SlowCoroutine(float duration)
     {
@@ -225,17 +220,17 @@ public class PlayerMovement : MonoBehaviour
     // ═══════════════════════════════════════════════
     // GETTERS
     // ═══════════════════════════════════════════════
-    public float GetHealthNormalized() => currentHealth / maxHealth;
-    public float GetCurrentHealth() => currentHealth;
+    /*public float GetHealthNormalized() => currentHealth / maxHealth;*/
+    /*public float GetCurrentHealth() => currentHealth;*/
     public float GetMaxHealth() => maxHealth;
     public float GetCurrentCooldown() => Mathf.Max(0.2f, attackCooldown - attackCooldownReduction);
 
-    public int GetDamage()
+    /*public int GetDamage()
     {
         if (swordCollider == null) return 0;
         Sword sword = swordCollider.GetComponent<Sword>();
         return sword != null ? sword.damage : 0;
-    }
+    }*/
 
     // ═══════════════════════════════════════════════
     // MÉTODOS DE TIENDA — BÁSICAS
@@ -345,10 +340,10 @@ public class PlayerMovement : MonoBehaviour
         return currentHealth;
     }
 
-    public float GetMaxHealth()
+    /*public float GetMaxHealth()
     {
         return maxHealth;
-    }
+    }*/
 
     public int GetDamage()
     {
@@ -365,11 +360,11 @@ public class PlayerMovement : MonoBehaviour
         return coins;
     }
 
-    public void AddCoins(int amount)
+    /*public void AddCoins(int amount)
     {
         coins += amount;
         if (coins < 0) coins = 0;
-    }
+    }*/
 
     public void AddSpeed(float amount)
     {
@@ -387,13 +382,13 @@ public class PlayerMovement : MonoBehaviour
         sword.AddDamage(amount);
     }
 
-    public void IncreaseMaxHealth(float amount)
+    /*public void IncreaseMaxHealth(float amount)
     {
         maxHealth += amount;
         if (maxHealth < 1) maxHealth = 1;
-    }
+    }*/
 
-    public void Heal(float amount)
+    /*public void Heal(float amount)
     {
         currentHealth += amount;
         if (currentHealth > maxHealth)
@@ -401,5 +396,5 @@ public class PlayerMovement : MonoBehaviour
 
         if (currentHealth < 0)
             currentHealth = 0;
-    }
+    }*/
 }

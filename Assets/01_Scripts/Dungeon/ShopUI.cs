@@ -113,7 +113,11 @@ public class ShopUI : MonoBehaviour
     // ═══════════════════════════════════════════════
     private void Update()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            player = FindFirstObjectByType<PlayerMovement>();
+            return;
+        }
 
         RefreshUI();
 

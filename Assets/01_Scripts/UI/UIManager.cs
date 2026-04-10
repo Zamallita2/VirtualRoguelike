@@ -22,13 +22,17 @@ public class UIManager : MonoBehaviour
     {
         if (player == null)
         {
-            player = FindObjectOfType<PlayerMovement>();
+            player = FindFirstObjectByType<PlayerMovement>();
         }
     }
 
     void Update()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            player = FindFirstObjectByType<PlayerMovement>();
+            return;
+        }
 
         UpdateHealth();
         UpdateStats();
