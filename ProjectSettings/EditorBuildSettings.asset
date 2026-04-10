@@ -8,12 +8,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/00_Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/00_Scenes/Vivi.unity
     guid: 9d2560d83106e005da0e36fa4f462b54
-  - enabled: 1
+  - enabled: 0
     path: Assets/00_Scenes/ViviAr.unity
     guid: 64305da3281ff324ba79d39957077beb
+  - enabled: 1
+    path: Assets/00_Scenes/CarlaPlayerAR.unity
+    guid: d6f5575b86073874980b61dee6ad4c91
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
