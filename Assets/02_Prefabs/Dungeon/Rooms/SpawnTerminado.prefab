@@ -856,6 +856,10 @@ PrefabInstance:
       propertyPath: maxHealth
       value: 10000
       objectReference: {fileID: 0}
+    - target: {fileID: 3452706506194056774, guid: 59142c3368c4aac22be08a98e6cbb872, type: 3}
+      propertyPath: useJoystick
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4703393497670612513, guid: 59142c3368c4aac22be08a98e6cbb872, type: 3}
       propertyPath: damage
       value: 100

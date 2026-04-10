@@ -2,12 +2,17 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+
     // ═══════════════════════════════════════════════
     // MOVIMIENTO
     // ═══════════════════════════════════════════════
     public float speed = 5f;
     private float currentSpeed;
     public float rotationSpeed = 10f;
+
+    [Header("Control AR")]
+    public FixedJoystick joystick;
+    public bool useJoystick = false;
 
     // ═══════════════════════════════════════════════
     // COMBATE
@@ -84,6 +89,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (swordCollider != null)
             swordCollider.enabled = false;
+
+        if (useJoystick && joystick == null)
+        {
+            joystick = FindObjectOfType<FixedJoystick>();
+        }
     }
 
     // ═══════════════════════════════════════════════
@@ -94,8 +104,8 @@ public class PlayerMovement : MonoBehaviour
         if (isDead) return;
 
         // Ataque
-        if (Input.GetKeyDown(KeyCode.Space) &&
-            Time.time >= lastAttackTime + GetCurrentCooldown())
+        if (!useJoystick && Input.GetKeyDown(KeyCode.Space) &&
+    Time.time >= lastAttackTime + GetCurrentCooldown())
         {
             StartCoroutine(Attack());
         }
@@ -119,8 +129,20 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDead || isAttacking) return;
 
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        float h;
+        float v;
+
+        if (useJoystick && joystick != null)
+        {
+            h = joystick.Horizontal;
+            v = joystick.Vertical;
+        }
+        else
+        {
+            h = Input.GetAxis("Horizontal");
+            v = Input.GetAxis("Vertical");
+        }
+
         Vector3 move = new Vector3(h, 0, v).normalized;
         Vector3 velocity = new Vector3(move.x * currentSpeed,
                                        rb.linearVelocity.y,
@@ -168,6 +190,16 @@ public class PlayerMovement : MonoBehaviour
             swordCollider.enabled = false;
 
         isAttacking = false;
+    }
+
+    public void AttackButton()
+    {
+        if (isDead) return;
+
+        if (Time.time >= lastAttackTime + GetCurrentCooldown())
+        {
+            StartCoroutine(Attack());
+        }
     }
 
     void Morir()
