@@ -227,31 +227,34 @@ public class EnemyAI : MonoBehaviour
         currentState = EnemyState.Dead;
         StopMovement();
 
+        // 🔥 DROPEAR LOOT
+        EnemyLootDrop loot = GetComponent<EnemyLootDrop>();
+        if (loot != null)
+        {
+            loot.DropLoot();
+        }
+
         // Desactivar el arma
         if (enemyWeapon != null) enemyWeapon.SetDamageActive(false);
 
-        // Reproducir animación y sonido de muerte
         if (anim != null) anim.SetTrigger(dieTrigger);
         PlayClip(dieClip);
 
-        // ⚡ DESACTIVAR TODOS LOS COLLIDERS para que el cadáver no sea un obstáculo
         if (mainCollider != null)
             mainCollider.enabled = false;
 
-        // También desactivar cualquier otro collider en los hijos (por ejemplo, el arma)
         Collider[] allColliders = GetComponentsInChildren<Collider>();
         foreach (Collider col in allColliders)
         {
-            if (col != mainCollider)  // Evita duplicar el ya desactivado
+            if (col != mainCollider)
                 col.enabled = false;
         }
 
-        // Hacer el Rigidbody completamente estático
         if (rb != null)
         {
             rb.linearVelocity = Vector3.zero;
             rb.isKinematic = true;
-            rb.detectCollisions = false;  // Evita colisiones incluso si algún collider quedara activo
+            rb.detectCollisions = false;
         }
 
         Debug.Log($"{name} ha muerto. Colliders desactivados.");

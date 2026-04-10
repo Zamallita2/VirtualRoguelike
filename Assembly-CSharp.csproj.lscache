@@ -61,6 +61,8 @@ Assets/01_Scripts/
   Room.cs
   RoomEnemyNotifier.cs
   RoomTrigger.cs
+  ShopTrigger.cs
+  ShopUI.cs
  Enemys/armadura viviente/
   EnemyAI.cs
   EnemyWeapon.cs
@@ -69,7 +71,10 @@ Assets/01_Scripts/
   BossAI.cs
   BossSword.cs
   Candelabro.cs
+  DarkMage.cs
   Dummy.cs
+  EnemyLootDrop.cs
+ Fireball.cs
  Menu/
   AudioManager.cs
   ButtonHoverEffect.cs
@@ -85,10 +90,12 @@ Assets/01_Scripts/
   MenuUISetup.cs
   TitleGlowEffect.cs
   VuforiaPlaneDetection.cs
+ pickup/PowerUpPickup.cs
  Player/
   PlayerMovement.cs
   Sword.cs
  UI/UIManager.cs
+ viviAR/PlacementController.cs
 Assets/TutorialInfo/Scripts/Readme.cs
 Temp/obj/Assembly-CSharp/.NETStandard,Version=v2.1.AssemblyAttributes.cs
 

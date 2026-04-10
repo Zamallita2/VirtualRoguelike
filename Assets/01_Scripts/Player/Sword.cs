@@ -12,6 +12,17 @@ public class Sword : MonoBehaviour
         hitEnemies.Clear();
     }
 
+    public void AddDamage(int amount)
+    {
+        damage += amount;
+        if (damage < 0) damage = 0;
+    }
+
+    public int GetDamage()
+    {
+        return damage;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         TryHit(other);

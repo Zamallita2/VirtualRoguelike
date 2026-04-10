@@ -2,19 +2,14 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // ═══════════════════════════════════════════════
-    // MOVIMIENTO
-    // ═══════════════════════════════════════════════
+    [Header("Movimiento")]
     public float speed = 5f;
     private float currentSpeed;
     public float rotationSpeed = 10f;
 
-    // ═══════════════════════════════════════════════
-    // COMBATE
-    // ═══════════════════════════════════════════════
-    [Header("Ataque")]
+    [Header("Ataque / Vida")]
     public float maxHealth = 100f;
-    public float currentHealth;
+    [SerializeField] public float currentHealth;
     public float attackCooldown = 1f;
     public float attackDuration = 0.5f;
     public Collider swordCollider;
@@ -74,11 +69,9 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
         col = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
-
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
-
         currentHealth = maxHealth;
         currentSpeed = speed;
 
@@ -202,7 +195,10 @@ public class PlayerMovement : MonoBehaviour
         PlaySound(takeDamageSound);
 
         if (currentHealth <= 0)
+        {
+            currentHealth = 0;
             Morir();
+        }
     }
 
     public void ApplySlow(float duration)
@@ -210,6 +206,12 @@ public class PlayerMovement : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(SlowCoroutine(duration));
     }
+    
+    /*public int GetDamage()
+    {
+        if (swordCollider == null) return 0;
+        return swordCollider.GetComponent<Sword>().damage;
+    }*/
 
     System.Collections.IEnumerator SlowCoroutine(float duration)
     {
@@ -221,17 +223,17 @@ public class PlayerMovement : MonoBehaviour
     // ═══════════════════════════════════════════════
     // GETTERS
     // ═══════════════════════════════════════════════
-    public float GetHealthNormalized() => currentHealth / maxHealth;
-    public float GetCurrentHealth() => currentHealth;
+    /*public float GetHealthNormalized() => currentHealth / maxHealth;*/
+    /*public float GetCurrentHealth() => currentHealth;*/
     public float GetMaxHealth() => maxHealth;
     public float GetCurrentCooldown() => Mathf.Max(0.2f, attackCooldown - attackCooldownReduction);
 
-    public int GetDamage()
+    /*public int GetDamage()
     {
         if (swordCollider == null) return 0;
         Sword sword = swordCollider.GetComponent<Sword>();
         return sword != null ? sword.damage : 0;
-    }
+    }*/
 
     // ═══════════════════════════════════════════════
     // MÉTODOS DE TIENDA — BÁSICAS
@@ -328,4 +330,74 @@ public class PlayerMovement : MonoBehaviour
     {
         if (clip != null) audioSource.PlayOneShot(clip);
     }
+
+
+    public float GetHealthNormalized()
+    {
+        if (maxHealth <= 0) return 0;
+        return currentHealth / maxHealth;
+    }
+
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    /*public float GetMaxHealth()
+    {
+        return maxHealth;
+    }*/
+
+    public int GetDamage()
+    {
+        if (swordCollider == null) return 0;
+
+        Sword sword = swordCollider.GetComponent<Sword>();
+        if (sword == null) return 0;
+
+        return sword.GetDamage();
+    }
+
+    public int GetCoins()
+    {
+        return coins;
+    }
+
+    /*public void AddCoins(int amount)
+    {
+        coins += amount;
+        if (coins < 0) coins = 0;
+    }*/
+
+    public void AddSpeed(float amount)
+    {
+        speed += amount;
+        if (speed < 0) speed = 0;
+    }
+
+    public void AddDamage(int amount)
+    {
+        if (swordCollider == null) return;
+
+        Sword sword = swordCollider.GetComponent<Sword>();
+        if (sword == null) return;
+
+        sword.AddDamage(amount);
+    }
+
+    /*public void IncreaseMaxHealth(float amount)
+    {
+        maxHealth += amount;
+        if (maxHealth < 1) maxHealth = 1;
+    }*/
+
+    /*public void Heal(float amount)
+    {
+        currentHealth += amount;
+        if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
+
+        if (currentHealth < 0)
+            currentHealth = 0;
+    }*/
 }

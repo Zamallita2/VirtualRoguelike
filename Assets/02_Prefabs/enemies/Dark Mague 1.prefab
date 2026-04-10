@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3521200341794802994}
   - component: {fileID: 4179666789465953281}
+  - component: {fileID: -7200671955612067163}
   - component: {fileID: 510731523244942864}
   - component: {fileID: 8786488544616468071}
   - component: {fileID: 8690010995443616912}
@@ -61,6 +62,31 @@ MonoBehaviour:
   castTime: 5
   timeBetweenShots: 1.5
   variableRa: 0.1
+  maxHealth: 50
+  currentHealth: 0
+--- !u!114 &-7200671955612067163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006146593862028361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3255c36b4dfabe64caa3e7e2411122ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyLootDrop
+  powerUpDropChance: 1
+  powerUpPrefabs:
+  - {fileID: 9181999477218551020, guid: 19e11ed28aabd48428b42259b7600c07, type: 3}
+  - {fileID: 8621544048108612813, guid: e9af6ad4f6e9b3c49a0b08f46de7615d, type: 3}
+  - {fileID: 3865790919438401363, guid: a2137bd5a570d1e42a989157dc3f5346, type: 3}
+  - {fileID: 5364263359937760773, guid: 62933fb5f01f5304486f4b8b2ebff2cb, type: 3}
+  coinPrefab: {fileID: 2664217711246900632, guid: b74aec405dc189040ab0cb032c366cac, type: 3}
+  minCoins: 1
+  maxCoins: 5
+  dropForce: 3
+  upwardForce: 2
 --- !u!33 &510731523244942864
 MeshFilter:
   m_ObjectHideFlags: 0
